@@ -1,8 +1,17 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SidebarProvider, SidebarTrigger } from "@/ui/shadcn/components/sidebar";
+import {
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/ui/shadcn/components/sidebar";
 import SideMenu from "@/ui/components/sideMenu/sideMenu";
+import ModalCreateInimigo from "@/ui/components/modals/inimigos/modalCreateInimigo";
+import ModalListInimigo from "@/ui/components/modals/inimigos/modalListInimigo";
+import ModalSelectInimigo from "@/ui/components/modals/inimigos/modalSelectInimigo";
+import ModalCreatePersonagem from "@/ui/components/modals/personagem/modalCreatePersonagem";
+import ModalListPersonagem from "@/ui/components/modals/personagem/modalLisPersonagem";
+import ModalSelectPersonagem from "@/ui/components/modals/personagem/modalSelectPersonagem";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,12 +39,25 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}
       >
         <SidebarProvider>
-          <SideMenu />
+          <div className="flex min-h-screen w-full">
+            {/* Sidebar fixa */}
+            <SideMenu />
 
-          <main className="flex min-h-screen flex-col w-full">
-            <SidebarTrigger />
-            {children}
-          </main>
+            {/* Conteúdo principal da aplicação */}
+            <main className="flex-1 flex flex-col overflow-hidden">
+              <SidebarTrigger />
+              {children}
+            </main>
+          </div>
+
+          {/* Modais (já estão fora da main, o que é correto) */}
+          <ModalCreateInimigo />
+          <ModalListInimigo />
+          <ModalSelectInimigo />
+
+          <ModalCreatePersonagem />
+          <ModalListPersonagem />
+          <ModalSelectPersonagem />
         </SidebarProvider>
       </body>
     </html>
