@@ -1,29 +1,54 @@
-"use client"
+"use client";
 
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/ui/shadcn/components/sidebar";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+} from "@/ui/shadcn/components/sidebar";
 
 import { MenuCollapse } from "./menuCollapse";
 
-export default function SideMenu() {    
+import {
+  useCreateInimigoModal,
+  useListInimigoModal,
+  useCreatePersonagemModal,
+  useListPersonagemModal,
+} from "@/lib/stores/useModal";
+
+export default function SideMenu() {
+  const { onOpen: openCreatePersonagem } = useCreatePersonagemModal();
+  const { onOpen: openListPersonagem } = useListPersonagemModal();
+
+  const { onOpen: openCreateInimigo } = useCreateInimigoModal();
+  const { onOpen: openListInimigo } = useListInimigoModal();
+
   const homeOptions = [
     { label: "Tabela personagens", href: "/" },
     { label: "Combate", href: "/combate" },
-  ]
+  ];
 
   const monstrosOptions = [
-    { label: "Criar Inimigo", onClick: () => console.log("Criar Inimigos") },
-    { label: "Listar Inimigos", onClick: () => console.log("Listar Inimigos") },
-  ]
-  const personagensOptions = [
-    { label: "Criar Personagem", onClick: () => console.log("Criar Inimigos") },
-    { label: "Listar Personagens", onClick: () => console.log("Listar Inimigos") },
-  ]
+    { label: "Criar Inimigo", onClick: openCreateInimigo },
+    { label: "Listar Inimigos", onClick: openListInimigo },
+  ];
 
-  return(
+  const personagensOptions = [
+    { label: "Criar Personagem", onClick: openCreatePersonagem },
+    { label: "Listar Personagens", onClick: openListPersonagem },
+  ];
+
+  return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Tabletop RPG Combat Assistant</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            Tabletop RPG Combat Assistant
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <MenuCollapse title="Home" options={homeOptions} />
@@ -34,5 +59,5 @@ export default function SideMenu() {
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }
