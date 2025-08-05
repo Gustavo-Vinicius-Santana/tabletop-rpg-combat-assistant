@@ -1,9 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { columns, Personagem } from "@/ui/components/table/columns";
 import { DataTable } from "@/ui/components/table/data-table";
+import { Button } from "@/ui/shadcn/components/button";
+import { useSelectPersonagemModal } from "@/lib/stores/useModal";
+import { on } from "events";
 
-const data: Personagem[] = [
+const initialData: Personagem[] = [
   {
     nome: "Arthas",
     classe: "Paladino",
@@ -11,7 +15,7 @@ const data: Personagem[] = [
     nivel: 10,
     vida: 120,
     armadura: 10,
-    pp: 10
+    pp: 10,
   },
   {
     nome: "Thrall",
@@ -20,15 +24,37 @@ const data: Personagem[] = [
     nivel: 12,
     vida: 140,
     armadura: 10,
-    pp: 10
+    pp: 10,
   },
 ];
+
 export default function Home() {
+  const [data, setData] = useState<Personagem[]>(initialData);
+  const { isOpen, onOpen } = useSelectPersonagemModal();
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Lista de Personagens</h1>
+    <div className="p-4 space-y-6">
+      <h1 className="text-2xl font-bold text-center">Lista de Personagens</h1>
+
       <DataTable columns={columns} data={data} />
+
+      <div className="w-1/2 md:w-1/4 mx-auto flex flex-col gap-2">
+        <Button
+          onClick={() => {
+            onOpen();
+          }}
+        >
+          Criar Personagem
+        </Button>
+
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => setData([])}
+        >
+          Limpar Tabela
+        </Button>
+      </div>
     </div>
   );
 }
