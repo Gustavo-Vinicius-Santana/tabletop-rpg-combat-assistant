@@ -44,7 +44,7 @@ export default function RootLayout({
             <SideMenu />
 
             {/* Conteúdo principal da aplicação */}
-            <main className="flex-1 flex flex-col overflow-hidden">
+            <main className="flex-1 flex flex-col">
               <SidebarTrigger />
               {children}
             </main>
