@@ -4,7 +4,7 @@ import { useState } from "react";
 import { columns, Personagem } from "@/ui/components/table/columns";
 import { DataTable } from "@/ui/components/table/data-table";
 import { Button } from "@/ui/shadcn/components/button";
-import { useSelectPersonagemModal } from "@/lib/stores/useModal";
+import { useSelectInimigoModal, useSelectPersonagemModal } from "@/lib/stores/useModal";
 import { on } from "events";
 
 const initialData: Personagem[] = [
@@ -31,6 +31,7 @@ const initialData: Personagem[] = [
 export default function Home() {
   const [data, setData] = useState<Personagem[]>(initialData);
   const { isOpen, onOpen } = useSelectPersonagemModal();
+  const { onOpen: openMoster } = useSelectInimigoModal();
 
   return (
     <div className="p-4 space-y-6">
@@ -44,7 +45,7 @@ export default function Home() {
             onOpen();
           }}
         >
-          Criar Personagem
+          Adicionar Personagem
         </Button>
 
         <Button
