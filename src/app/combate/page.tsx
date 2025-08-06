@@ -4,6 +4,10 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import CardInimigo from "@/ui/components/cards/cardInimigo";
 import CardPersonagem from "@/ui/components/cards/cardPersonagem";
+import {
+  useSelectInimigoModal,
+  useSelectPersonagemModal,
+} from "@/lib/stores/useModal";
 
 interface Personagem {
   tipo: "personagem";
@@ -89,71 +93,91 @@ const inimigos: Inimigo[] = [
 ];
 
 export default function Page() {
+  const { onOpen: openSelectPersonagem } = useSelectPersonagemModal();
+  const { onOpen: openSelectInimigo } = useSelectInimigoModal();
+
   const combatentes: Combatente[] = [...personagens, ...inimigos].sort(
     (a, b) => b.iniciativa - a.iniciativa
   );
 
   const [turnoAtual, setTurnoAtual] = useState(0);
+  const [rodadaAtual, setRodadaAtual] = useState(1);
+  const [tempoCombate, setTempoCombate] = useState(0); // começa com 6s
 
   const proximoTurno = () => {
-    setTurnoAtual((prev) => (prev + 1) % combatentes.length);
+    const proximo = turnoAtual + 1;
+
+    if (proximo >= combatentes.length) {
+      // Todos já agiram, nova rodada
+      setTurnoAtual(0);
+      setRodadaAtual((prev) => prev + 1);
+      setTempoCombate((prev) => prev + 6); // +6s por rodada
+    } else {
+      setTurnoAtual(proximo);
+    }
   };
+
+  // Formatar tempo (mm:ss)
+  const minutos = Math.floor(tempoCombate / 60);
+  const segundos = tempoCombate % 60;
+  const tempoFormatado = `${minutos}:${segundos.toString().padStart(2, "0")}`;
 
   return (
     <div className="w-full min-h-screen px-6 py-10 bg-background flex flex-col items-center">
       <h1 className="text-3xl font-bold text-foreground mb-6">Combate</h1>
 
-      {/* Estado do combate */}
       <div className="w-full max-w-4xl flex flex-col gap-4 mb-6">
         <div className="bg-muted border border-border p-4 rounded-md">
           <h2 className="text-lg font-semibold text-foreground mb-3">
             Estado do Combate
           </h2>
           <div className="text-sm text-muted-foreground space-y-1">
-            <p>Turnos: {turnoAtual + 1}</p>
-            <p>Rodadas: {Math.floor(turnoAtual / combatentes.length) + 1}</p>
-            <p>Tempo transcorrido: 0:06</p>
+            <p>Turno atual: {turnoAtual + 1} / {combatentes.length}</p>
+            <p>Rodada: {rodadaAtual}</p>
+            <p>Tempo transcorrido: {tempoFormatado}</p>
           </div>
         </div>
       </div>
 
-      {/* Lista de combate + ações */}
       <div className="w-full max-w-4xl bg-muted border border-border p-4 rounded-md flex flex-col gap-4">
         <h2 className="text-lg font-semibold text-foreground">Combate</h2>
-        {/* Botões fixos ao rolar */}
-      <div
-        className="
-          sticky top-0 w-full
-          bg-muted border border-border rounded-lg
-          shadow-lg
-          p-4
-          z-20
-          backdrop-blur-sm bg-opacity-90
-          transition-shadow duration-300
-          hover:shadow-xl
-          flex flex-col items-center gap-3
-        "
-      >
-        {/* Dois botões lado a lado */}
-        <div className="flex gap-4 w-full max-w-sm">
-          <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md shadow-md transition">
-            Adicionar Inimigo
-          </button>
-          <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md shadow-md transition">
-            Adicionar Personagem
+
+        <div
+          className="
+            sticky top-0 w-full
+            bg-muted border border-border rounded-lg
+            shadow-lg
+            p-4
+            z-20
+            backdrop-blur-sm bg-opacity-90
+            transition-shadow duration-300
+            hover:shadow-xl
+            flex flex-col items-center gap-3
+          "
+        >
+          <div className="flex gap-4 w-full max-w-sm">
+            <button
+              onClick={openSelectPersonagem}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md shadow-md transition"
+            >
+              Adicionar Inimigo
+            </button>
+            <button
+              onClick={openSelectInimigo}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md shadow-md transition"
+            >
+              Adicionar Personagem
+            </button>
+          </div>
+
+          <button
+            onClick={proximoTurno}
+            className="w-48 bg-zinc-300 hover:bg-zinc-400 text-zinc-900 font-semibold py-2 rounded-md shadow-md transition"
+          >
+            {turnoAtual + 1 === combatentes.length ? "Próxima rodada" : "Próximo turno"}
           </button>
         </div>
 
-        {/* Botão Próximo turno centralizado */}
-        <button
-          onClick={proximoTurno}
-          className="w-48 bg-zinc-300 hover:bg-zinc-400 text-zinc-900 font-semibold py-2 rounded-md shadow-md transition"
-        >
-          Próximo turno
-        </button>
-      </div>
-
-        {/* Lista de combatentes */}
         <div className="flex flex-col gap-6">
           {combatentes.map((c, index) => {
             const ativo = index === turnoAtual;
