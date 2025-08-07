@@ -15,26 +15,7 @@ import {
 
 import { useCombateStore } from "@/lib/stores/useCombat";
 
-interface Personagem {
-  tipo: "personagem";
-  nome: string;
-  classe: string;
-  raca: string;
-  nivel: string;
-  vida: string;
-  armadura: string;
-  pp: string;
-  iniciativa: number;
-}
-
-interface Inimigo {
-  tipo: "inimigo";
-  nome: string;
-  vida: string;
-  armadura: string;
-  ataque: string;
-  iniciativa: number;
-}
+import type { Personagem, Inimigo } from "@/lib/types/type";  // <-- import dos types
 
 type Combatente = Personagem | Inimigo;
 
@@ -51,7 +32,6 @@ export default function Page() {
   const [turnoAtual, setTurnoAtual] = useState(0);
   const [rodadaAtual, setRodadaAtual] = useState(1);
   const [tempoCombate, setTempoCombate] = useState(0);
-  
 
   // Carregar dados do localForage
   useEffect(() => {
@@ -64,7 +44,7 @@ export default function Page() {
     };
 
     carregarDados();
-  }, [atualizarCombate]); 
+  }, [atualizarCombate]);
 
   const combatentes: Combatente[] = [...personagens, ...inimigos].sort(
     (a, b) => b.iniciativa - a.iniciativa

@@ -1,14 +1,5 @@
+import type { Personagem } from "@/lib/types/type"; // importa o type centralizado
 import { ColumnDef } from "@tanstack/react-table";
-
-export type Personagem = {
-  nome: string;
-  classe: string;
-  raca: string;
-  nivel: number;
-  vida: number;
-  armadura: number;
-  pp: number;
-};
 
 export const columns: ColumnDef<Personagem>[] = [
   {
@@ -16,12 +7,12 @@ export const columns: ColumnDef<Personagem>[] = [
     header: "Nome",
     enableSorting: false,
   },
-    {
+  {
     accessorKey: "raca",
     header: "Raça",
     enableSorting: false,
   },
-{
+  {
     accessorKey: "vida",
     header: "Vida",
     enableSorting: true,
@@ -45,5 +36,5 @@ export const columns: ColumnDef<Personagem>[] = [
     accessorKey: "pp",
     header: "PP",
     enableSorting: true,
-  }
+  },
 ];

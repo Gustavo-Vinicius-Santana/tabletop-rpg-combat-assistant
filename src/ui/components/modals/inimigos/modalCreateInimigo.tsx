@@ -16,25 +16,20 @@ import { Input } from "@/ui/shadcn/components/input";
 import { Textarea } from "@/ui/shadcn/components/textarea";
 import { Label } from "@/ui/shadcn/components/label";
 import { Button } from "@/ui/shadcn/components/button";
-
-interface Inimigo {
-  nome: string;
-  vida: string;
-  armadura: string;
-  ataque: string;
-  notas?: string;
-  iniciativa?: number;
-}
+import { Inimigo } from "@/lib/types/type";
 
 export default function ModalCreateInimigo() {
   const { isOpen, onClose } = useCreateInimigoModal();
 
   const [form, setForm] = useState<Inimigo>({
+    id: "",
+    tipo: "inimigo",
     nome: "",
     vida: "",
+    dano: "",
     armadura: "",
     ataque: "",
-    notas: "",
+    iniciativa: 0,
   });
 
   const atualizar = (campo: keyof Inimigo, valor: string) => {
@@ -53,11 +48,14 @@ export default function ModalCreateInimigo() {
 
     onClose();
     setForm({
+      id: "",
+      tipo: "inimigo",
       nome: "",
       vida: "",
+      dano: "",
       armadura: "",
       ataque: "",
-      notas: "",
+      iniciativa: 0,
     });
   };
 

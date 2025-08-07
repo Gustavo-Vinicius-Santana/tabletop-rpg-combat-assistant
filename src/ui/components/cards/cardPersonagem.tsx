@@ -1,15 +1,6 @@
 "use client";
 
-interface CardPersonagemProps {
-  nome: string;
-  classe: string;
-  raca: string;
-  nivel: string;
-  vida: string;
-  armadura: string;
-  pp: string;
-  iniciativa?: number;
-}
+import type { Personagem } from "@/lib/types/type";
 
 export default function CardPersonagem({
   nome,
@@ -20,7 +11,7 @@ export default function CardPersonagem({
   armadura,
   pp,
   iniciativa,
-}: CardPersonagemProps) {
+}: Personagem) {
   return (
     <div className="bg-muted border border-border rounded-md p-6 max-w-md mx-auto shadow-sm space-y-4 text-sm text-muted-foreground">
       <h2 className="text-xl font-bold text-foreground text-center">{nome}</h2>

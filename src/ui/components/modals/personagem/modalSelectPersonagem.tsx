@@ -17,21 +17,7 @@ import { Button } from "@/ui/shadcn/components/button";
 import SelectablePersonagemCard from "@/ui/components/cards/selectablePersonagemCard";
 import { useCombateStore } from "@/lib/stores/useCombat";
 import { useAventuraStore } from "@/lib/stores/useAventura";
-
-interface Personagem {
-  id: string;
-  nome: string;
-  tipo: string;
-  armadura: string;
-  ataque: string;
-  nivel: string;
-  classe: string;
-  raca: string;
-  pp: string;
-  vida: string;
-  dano: string;
-  iniciativa: number;
-}
+import { Personagem } from "@/lib/types/type";
 
 export default function ModalSelectPersonagem() {
   const { isOpen, key, onClose } = useSelectPersonagemModal();
@@ -125,7 +111,8 @@ export default function ModalSelectPersonagem() {
             <ul className="list-disc list-inside">
               {selectedPersonagens.map((p) => (
                 <li key={p.nome}>
-                  {p.nome} — {p.classe} {p.nivel}, Vida: {p.vida}, Iniciativa: {p.iniciativa}
+                  {p.nome} — {p.classe} {p.nivel}, Vida: {p.vida}, Iniciativa:{" "}
+                  {p.iniciativa}
                 </li>
               ))}
             </ul>

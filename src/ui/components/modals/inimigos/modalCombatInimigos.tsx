@@ -1,5 +1,6 @@
 "use client";
 
+import type { Inimigo } from "@/lib/types/type";
 import { useCombatInimigoModal } from "@/lib/stores/useModal";
 import { Button } from "@/ui/shadcn/components/button";
 import {
@@ -17,9 +18,9 @@ import { Textarea } from "@/ui/shadcn/components/textarea";
 export default function ModalCombatInimigos() {
   const { isOpen, data, onClose } = useCombatInimigoModal();
 
-  if (!data) return null; // Evita renderização com dados nulos
-  if (!data || data.tipo !== "inimigo") return null;
+  const inimigo = data as Inimigo | null;
 
+  if (!isOpen || !inimigo || inimigo.tipo !== "inimigo") return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -36,7 +37,7 @@ export default function ModalCombatInimigos() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="nome">Nome</Label>
-                <Input id="nome" name="nome" defaultValue={data.nome} readOnly />
+                <Input id="nome" name="nome" defaultValue={inimigo.nome} readOnly />
               </div>
 
               <div>
@@ -44,8 +45,8 @@ export default function ModalCombatInimigos() {
                 <Input
                   id="vida"
                   name="vida"
-                  type="number"
-                  defaultValue={data.vida}
+                  type="text"
+                  defaultValue={inimigo.vida}
                   readOnly
                 />
               </div>
@@ -55,8 +56,8 @@ export default function ModalCombatInimigos() {
                 <Input
                   id="armadura"
                   name="armadura"
-                  type="number"
-                  defaultValue={data.armadura}
+                  type="text"
+                  defaultValue={inimigo.armadura}
                   readOnly
                 />
               </div>
@@ -66,8 +67,8 @@ export default function ModalCombatInimigos() {
                 <Input
                   id="ataque"
                   name="ataque"
-                  type="number"
-                  defaultValue={data.ataque}
+                  type="text"
+                  defaultValue={inimigo.ataque}
                   readOnly
                 />
               </div>
@@ -78,7 +79,7 @@ export default function ModalCombatInimigos() {
               <Textarea
                 id="notas"
                 name="notas"
-                defaultValue={data.notas}
+                defaultValue={inimigo.notas ?? ""}
                 readOnly
               />
             </div>

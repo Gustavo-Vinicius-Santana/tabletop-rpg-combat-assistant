@@ -1,12 +1,6 @@
 "use client";
 
-interface CardInimigoProps {
-  nome: string;
-  vida: string;
-  armadura: string;
-  ataque: string;
-  iniciativa?: number;
-}
+import type { Inimigo } from "@/lib/types/type";
 
 export default function CardInimigo({
   nome,
@@ -14,7 +8,7 @@ export default function CardInimigo({
   armadura,
   ataque,
   iniciativa,
-}: CardInimigoProps) {
+}: Inimigo) {
   return (
     <div className="bg-muted border border-border rounded-md p-6 max-w-md mx-auto shadow-sm space-y-4 text-sm text-muted-foreground">
       <h2 className="text-xl font-bold text-foreground text-center">{nome}</h2>

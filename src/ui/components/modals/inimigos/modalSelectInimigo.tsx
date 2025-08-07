@@ -16,13 +16,7 @@ import SelectableInimigoCard from "@/ui/components/cards/selectableInimigoCard";
 import localforage from "localforage";
 import { useCombateStore } from "@/lib/stores/useCombat";
 
-interface Inimigo {
-  id: string;
-  nome: string;
-  vida: string;
-  armadura: string;
-  ataque: string;
-}
+import { Inimigo } from "@/lib/types/type";
 
 export default function ModalSelectInimigo() {
   const { isOpen, key, onClose } = useSelectInimigoModal();
@@ -31,7 +25,6 @@ export default function ModalSelectInimigo() {
   const [inimigos, setInimigos] = useState<Inimigo[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  // Carrega os inimigos salvos em localForage
   useEffect(() => {
     const carregarInimigos = async () => {
       const data = await localforage.getItem<Inimigo[]>("inimigos");
@@ -105,7 +98,6 @@ export default function ModalSelectInimigo() {
           </div>
         </ScrollArea>
 
-        {/* Listagem dos inimigos selecionados */}
         {selected.size > 0 && (
           <div className="mt-4 text-sm text-muted-foreground">
             <h4 className="font-medium text-foreground mb-2">

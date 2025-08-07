@@ -14,13 +14,7 @@ import {
 import { ScrollArea } from "@/ui/shadcn/components/scroll-area";
 import CardInimigo from "@/ui/components/cards/cardInimigo";
 
-interface Inimigo {
-  nome: string;
-  vida: string;
-  armadura: string;
-  ataque: string;
-  iniciativa?: number;
-}
+import type { Inimigo } from "@/lib/types/type";  // Importa o tipo
 
 export default function ModalListInimigo() {
   const { isOpen, onClose } = useListInimigoModal();

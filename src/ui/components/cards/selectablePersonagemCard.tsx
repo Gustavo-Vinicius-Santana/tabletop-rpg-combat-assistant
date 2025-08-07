@@ -1,22 +1,8 @@
 "use client";
 
+import type { Personagem } from "@/lib/types/type";
 import { Checkbox } from "@/ui/shadcn/components/checkbox";
 import { cn } from "@/lib/utils";
-
-interface Personagem {
-  id: string;
-  nome: string;
-  tipo: string;
-  armadura: string;
-  ataque: string;
-  nivel: string;
-  classe: string;
-  raca: string;
-  pp: string;
-  vida: string;
-  dano: string;
-  iniciativa: number;
-}
 
 interface SelectablePersonagemCardProps {
   personagem: Personagem;

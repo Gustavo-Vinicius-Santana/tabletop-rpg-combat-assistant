@@ -13,17 +13,7 @@ import {
 } from "@/ui/shadcn/components/dialog";
 import { ScrollArea } from "@/ui/shadcn/components/scroll-area";
 import CardPersonagem from "@/ui/components/cards/cardPersonagem";
-
-interface Personagem {
-  nome: string;
-  classe: string;
-  raca: string;
-  nivel: string;
-  vida: string;
-  armadura: string;
-  pp: string;
-  iniciativa?: number;
-}
+import type { Personagem } from "@/lib/types/type";
 
 export default function ModalListPersonagem() {
   const { isOpen, onClose } = useListPersonagemModal();

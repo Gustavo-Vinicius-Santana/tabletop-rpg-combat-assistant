@@ -1,15 +1,8 @@
 "use client";
 
+import type { Inimigo } from "@/lib/types/type";
 import { Checkbox } from "@/ui/shadcn/components/checkbox";
 import { cn } from "@/lib/utils";
-
-interface Inimigo {
-  id: string;
-  nome: string;
-  vida: string;
-  armadura: string;
-  ataque: string;
-}
 
 interface SelectableInimigoCardProps {
   inimigo: Inimigo;

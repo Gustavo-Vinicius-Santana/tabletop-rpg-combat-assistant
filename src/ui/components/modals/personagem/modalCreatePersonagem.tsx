@@ -16,33 +16,23 @@ import { Input } from "@/ui/shadcn/components/input";
 import { Textarea } from "@/ui/shadcn/components/textarea";
 import { Label } from "@/ui/shadcn/components/label";
 import { Button } from "@/ui/shadcn/components/button";
-
-interface Personagem {
-  nome: string;
-  classe: string;
-  raca: string;
-  nivel: string;
-  vida: string;
-  ataque: string;
-  notas?: string;
-  armadura?: string;
-  pp?: string;
-  iniciativa?: number;
-}
+import type { Personagem } from "@/lib/types/type";
 
 export default function ModalCreatePersonagem() {
   const { isOpen, onClose } = useCreatePersonagemModal();
 
   const [form, setForm] = useState<Personagem>({
+    id: "",             // Precisa criar ID vazio inicialmente
+    tipo: "personagem", // Deve iniciar fixo como "personagem"
     nome: "",
     classe: "",
     raca: "",
     nivel: "",
     vida: "",
-    ataque: "",
-    notas: "",
     armadura: "",
     pp: "",
+    dano: "",
+    notas: "",
     iniciativa: 0,
   });
 
@@ -62,19 +52,22 @@ export default function ModalCreatePersonagem() {
 
     onClose();
     setForm({
+      id: "",             // Precisa criar ID vazio inicialmente
+      tipo: "personagem", // Deve iniciar fixo como "personagem"
       nome: "",
       classe: "",
       raca: "",
       nivel: "",
       vida: "",
-      ataque: "",
-      notas: "",
       armadura: "",
       pp: "",
+      dano: "",
+      notas: "",
+      iniciativa: 0,
     });
   };
 
-  return (
+ return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-h-[90vh]">
         <DialogHeader>
@@ -137,17 +130,6 @@ export default function ModalCreatePersonagem() {
               </div>
 
               <div>
-                <Label htmlFor="ataque">Ataque</Label>
-                <Input
-                  id="ataque"
-                  type="text"
-                  inputMode="numeric"
-                  value={form.ataque}
-                  onChange={(e) => atualizar("ataque", e.target.value)}
-                />
-              </div>
-
-              <div>
                 <Label htmlFor="armadura">Armadura</Label>
                 <Input
                   id="armadura"
@@ -164,7 +146,17 @@ export default function ModalCreatePersonagem() {
                   id="pp"
                   type="text"
                   value={form.pp}
-                  onChange={(e) => atualizar("pp", parseInt(e.target.value || "0", 10))}
+                  onChange={(e) => atualizar("pp", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="dano">Dano</Label>
+                <Input
+                  id="dano"
+                  type="text"
+                  value={form.dano}
+                  onChange={(e) => atualizar("dano", e.target.value)}
                 />
               </div>
             </div>

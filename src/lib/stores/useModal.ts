@@ -1,26 +1,5 @@
 import { create } from "zustand";
-
-type Personagem = {
-  tipo: "personagem";
-  nome: string;
-  classe: string;
-  raca: string;
-  nivel: string;
-  vida: string;
-  armadura: string;
-  pp: string;
-  iniciativa: number;
-  notas?: string;
-};
-
-type Inimigo = {
-  tipo: "inimigo";
-  nome: string;
-  vida: string;
-  armadura: string;
-  ataque: string;
-  notas?: string;
-};
+import {Personagem, Inimigo} from "@/lib/types/type";
 
 // Tipos base
 type ModalCreate = {
