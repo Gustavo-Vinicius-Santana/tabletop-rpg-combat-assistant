@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import localforage from "localforage";
+
 import { useListPersonagemModal } from "@/lib/stores/useModal";
 import {
   Dialog,
@@ -11,38 +14,31 @@ import {
 import { ScrollArea } from "@/ui/shadcn/components/scroll-area";
 import CardPersonagem from "@/ui/components/cards/cardPersonagem";
 
-const personagens = [
-  {
-    nome: "Arthas",
-    classe: "Paladino",
-    raca: "Humano",
-    nivel: 10,
-    vida: 120,
-    armadura: 10,
-    pp: 10,
-  },
-  {
-    nome: "Thrall",
-    classe: "Xamã",
-    raca: "Orc",
-    nivel: 12,
-    vida: 140,
-    armadura: 10,
-    pp: 10,
-  },
-  {
-    nome: "Garrosh",
-    classe: "Xamã",
-    raca: "Orc",
-    nivel: 12,
-    vida: 140,
-    armadura: 10,
-    pp: 10,
-  },
-];
+interface Personagem {
+  nome: string;
+  classe: string;
+  raca: string;
+  nivel: string;
+  vida: string;
+  armadura: string;
+  pp: string;
+  iniciativa?: number;
+}
 
 export default function ModalListPersonagem() {
   const { isOpen, onClose } = useListPersonagemModal();
+  const [personagens, setPersonagens] = useState<Personagem[]>([]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const carregarPersonagens = async () => {
+      const dados = await localforage.getItem<Personagem[]>("personagens");
+      setPersonagens(dados ?? []);
+    };
+
+    carregarPersonagens();
+  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -66,6 +62,7 @@ export default function ModalListPersonagem() {
                 vida={p.vida}
                 armadura={p.armadura}
                 pp={p.pp}
+                iniciativa={p.iniciativa}
               />
             ))}
           </div>

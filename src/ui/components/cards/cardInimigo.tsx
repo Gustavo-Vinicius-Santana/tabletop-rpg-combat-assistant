@@ -2,9 +2,9 @@
 
 interface CardInimigoProps {
   nome: string;
-  vida: number;
-  armadura: number;
-  ataque: number;
+  vida: string;
+  armadura: string;
+  ataque: string;
   iniciativa?: number;
 }
 

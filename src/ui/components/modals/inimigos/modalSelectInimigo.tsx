@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelectInimigoModal } from "@/lib/stores/useModal";
 import {
   Dialog,
@@ -11,25 +11,36 @@ import {
 } from "@/ui/shadcn/components/dialog";
 import { ScrollArea } from "@/ui/shadcn/components/scroll-area";
 import { Button } from "@/ui/shadcn/components/button";
-
 import SelectableInimigoCard from "@/ui/components/cards/selectableInimigoCard";
 
-interface Inimigo {
-  nome: string;
-  vida: number;
-  armadura: number;
-  ataque: number;
-}
+import localforage from "localforage";
 
-const inimigos: Inimigo[] = [
-  { nome: "Goblin", vida: 30, armadura: 5, ataque: 7 },
-  { nome: "Orc", vida: 50, armadura: 8, ataque: 12 },
-  { nome: "Troll", vida: 80, armadura: 12, ataque: 18 },
-];
+interface Inimigo {
+  id: string;
+  nome: string;
+  vida: string;
+  armadura: string;
+  ataque: string;
+}
 
 export default function ModalSelectInimigo() {
   const { isOpen, onClose } = useSelectInimigoModal();
+  const [inimigos, setInimigos] = useState<Inimigo[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  // Carrega os inimigos salvos em localForage
+  useEffect(() => {
+    const carregarInimigos = async () => {
+      const data = await localforage.getItem<Inimigo[]>("inimigos");
+      if (data && Array.isArray(data)) {
+        setInimigos(data);
+      }
+    };
+
+    if (isOpen) {
+      carregarInimigos();
+    }
+  }, [isOpen]);
 
   const toggleSelect = (nome: string) => {
     setSelected((prev) => {
@@ -43,6 +54,8 @@ export default function ModalSelectInimigo() {
     });
   };
 
+  const selectedInimigos = inimigos.filter((i) => selected.has(i.nome));
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[80vh]">
@@ -55,23 +68,46 @@ export default function ModalSelectInimigo() {
 
         <ScrollArea className="h-[40vh] mt-4">
           <div className="flex flex-col items-center space-y-4">
-            {inimigos.map((inimigo) => (
-              <SelectableInimigoCard
-                key={inimigo.nome}
-                inimigo={inimigo}
-                checked={selected.has(inimigo.nome)}
-                onToggle={() => toggleSelect(inimigo.nome)}
-              />
-            ))}
+            {inimigos.length > 0 ? (
+              inimigos.map((inimigo) => (
+                <SelectableInimigoCard
+                  key={inimigo.nome}
+                  inimigo={inimigo}
+                  checked={selected.has(inimigo.nome)}
+                  onToggle={() => toggleSelect(inimigo.nome)}
+                />
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Nenhum inimigo cadastrado.
+              </p>
+            )}
           </div>
         </ScrollArea>
+
+        {/* Listagem dos inimigos selecionados */}
+        {selected.size > 0 && (
+          <div className="mt-4 text-sm text-muted-foreground">
+            <h4 className="font-medium text-foreground mb-2">
+              Inimigos Selecionados:
+            </h4>
+            <ul className="list-disc list-inside">
+              {selectedInimigos.map((inimigo) => (
+                <li key={inimigo.nome}>
+                  {inimigo.nome} — Vida: {inimigo.vida}, Armadura:{" "}
+                  {inimigo.armadura}, Ataque: {inimigo.ataque}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="pt-4">
           <Button
             disabled={selected.size === 0}
             className="w-full"
             onClick={() => {
-              console.log("Inimigos selecionados:", Array.from(selected));
+              console.log("Inimigos selecionados:", selectedInimigos);
               onClose();
             }}
           >

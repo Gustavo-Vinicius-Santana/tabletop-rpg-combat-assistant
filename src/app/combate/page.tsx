@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import localforage from "localforage";
+
 import CardInimigo from "@/ui/components/cards/cardInimigo";
 import CardPersonagem from "@/ui/components/cards/cardPersonagem";
 import {
@@ -16,113 +18,66 @@ interface Personagem {
   nome: string;
   classe: string;
   raca: string;
-  nivel: number;
-  vida: number;
-  armadura: number;
-  pp: number;
+  nivel: string;
+  vida: string;
+  armadura: string;
+  pp: string;
   iniciativa: number;
 }
 
 interface Inimigo {
   tipo: "inimigo";
   nome: string;
-  vida: number;
-  armadura: number;
-  ataque: number;
+  vida: string;
+  armadura: string;
+  ataque: string;
   iniciativa: number;
 }
 
 type Combatente = Personagem | Inimigo;
 
-const personagens: Personagem[] = [
-  {
-    tipo: "personagem",
-    nome: "Arthas",
-    classe: "Paladino",
-    raca: "Humano",
-    nivel: 10,
-    vida: 120,
-    armadura: 10,
-    pp: 10,
-    iniciativa: 15,
-  },
-  {
-    tipo: "personagem",
-    nome: "Thrall",
-    classe: "Xamã",
-    raca: "Orc",
-    nivel: 12,
-    vida: 140,
-    armadura: 10,
-    pp: 10,
-    iniciativa: 12,
-  },
-];
-
-const inimigos: Inimigo[] = [
-  {
-    tipo: "inimigo",
-    nome: "Goblin",
-    vida: 40,
-    armadura: 6,
-    ataque: 7,
-    iniciativa: 14,
-  },
-  {
-    tipo: "inimigo",
-    nome: "Orc",
-    vida: 70,
-    armadura: 9,
-    ataque: 10,
-    iniciativa: 10,
-  },
-  {
-    tipo: "inimigo",
-    nome: "Troll",
-    vida: 100,
-    armadura: 12,
-    ataque: 15,
-    iniciativa: 8,
-  },
-  {
-    tipo: "inimigo",
-    nome: "Dragão",
-    vida: 300,
-    armadura: 25,
-    ataque: 30,
-    iniciativa: 5,
-  },
-];
-
 export default function Page() {
   const { onOpen: openSelectPersonagem } = useSelectPersonagemModal();
   const { onOpen: openSelectInimigo } = useSelectInimigoModal();
-
   const { onOpen: openPersonagemCombatModal } = useCombatPersonagemModal();
   const { onOpen: openInimigoCombatModal } = useCombatInimigoModal();
+
+  const [personagens, setPersonagens] = useState<Personagem[]>([]);
+  const [inimigos, setInimigos] = useState<Inimigo[]>([]);
+
+  const [turnoAtual, setTurnoAtual] = useState(0);
+  const [rodadaAtual, setRodadaAtual] = useState(1);
+  const [tempoCombate, setTempoCombate] = useState(0);
+
+  // Carregar dados do localForage
+  useEffect(() => {
+    const carregarDados = async () => {
+      const personagensSalvos = await localforage.getItem<Personagem[]>("personagensEmCombate");
+      const inimigosSalvos = await localforage.getItem<Inimigo[]>("inimigosEmCombate");
+
+      setPersonagens(personagensSalvos || []);
+      setInimigos(inimigosSalvos || []);
+    };
+
+    carregarDados();
+  }, []);
 
   const combatentes: Combatente[] = [...personagens, ...inimigos].sort(
     (a, b) => b.iniciativa - a.iniciativa
   );
 
-  const [turnoAtual, setTurnoAtual] = useState(0);
-  const [rodadaAtual, setRodadaAtual] = useState(1);
-  const [tempoCombate, setTempoCombate] = useState(0); // começa com 6s
-
   const proximoTurno = () => {
     const proximo = turnoAtual + 1;
 
     if (proximo >= combatentes.length) {
-      // Todos já agiram, nova rodada
       setTurnoAtual(0);
       setRodadaAtual((prev) => prev + 1);
-      setTempoCombate((prev) => prev + 6); // +6s por rodada
+      setTempoCombate((prev) => prev + 6);
     } else {
       setTurnoAtual(proximo);
     }
   };
 
-  // Formatar tempo (mm:ss)
   const minutos = Math.floor(tempoCombate / 60);
   const segundos = tempoCombate % 60;
   const tempoFormatado = `${minutos}:${segundos.toString().padStart(2, "0")}`;
@@ -133,9 +88,7 @@ export default function Page() {
 
       <div className="w-full max-w-4xl flex flex-col gap-4 mb-6">
         <div className="bg-muted border border-border p-4 rounded-md">
-          <h2 className="text-lg font-semibold text-foreground mb-3">
-            Estado do Combate
-          </h2>
+          <h2 className="text-lg font-semibold text-foreground mb-3">Estado do Combate</h2>
           <div className="text-sm text-muted-foreground space-y-1">
             <p>Turno atual: {turnoAtual + 1} / {combatentes.length}</p>
             <p>Rodada: {rodadaAtual}</p>
@@ -147,28 +100,16 @@ export default function Page() {
       <div className="w-full max-w-4xl bg-muted border border-border p-4 rounded-md flex flex-col gap-4">
         <h2 className="text-lg font-semibold text-foreground">Combate</h2>
 
-        <div
-          className="
-            sticky top-0 w-full
-            bg-muted border border-border rounded-lg
-            shadow-lg
-            p-4
-            z-20
-            backdrop-blur-sm bg-opacity-90
-            transition-shadow duration-300
-            hover:shadow-xl
-            flex flex-col items-center gap-3
-          "
-        >
+        <div className="sticky top-0 w-full bg-muted border border-border rounded-lg shadow-lg p-4 z-20 backdrop-blur-sm bg-opacity-90 transition-shadow duration-300 hover:shadow-xl flex flex-col items-center gap-3">
           <div className="flex gap-4 w-full max-w-sm">
             <button
-              onClick={openSelectPersonagem}
+              onClick={openSelectInimigo}
               className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md shadow-md transition"
             >
               Adicionar Inimigo
             </button>
             <button
-              onClick={openSelectInimigo}
+              onClick={openSelectPersonagem}
               className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md shadow-md transition"
             >
               Adicionar Personagem
@@ -188,19 +129,17 @@ export default function Page() {
             const ativo = index === turnoAtual;
             return (
               <div
+                key={c.nome}
                 onClick={() => {
                   if (c.tipo === "personagem") {
                     openPersonagemCombatModal(c);
-                    console.log("clicado personagem")
                   } else {
                     openInimigoCombatModal(c);
-                    console.log("clicado inimigo")
                   }
                 }}
-                key={c.nome}
                 className={cn(
                   "relative transition-all rounded-md cursor-pointer",
-                  ativo && "ring-2 ring-primary bg-primary/5 shadow-sm cursor-pointer"
+                  ativo && "ring-2 ring-primary bg-primary/5 shadow-sm"
                 )}
               >
                 {ativo && (

@@ -4,13 +4,18 @@ import { Checkbox } from "@/ui/shadcn/components/checkbox";
 import { cn } from "@/lib/utils";
 
 interface Personagem {
+  id: string;
   nome: string;
+  tipo: string;
+  armadura: string;
+  ataque: string;
+  nivel: string;
   classe: string;
   raca: string;
-  nivel: number;
-  vida: number;
-  armadura: number;
-  pp: number;
+  pp: string;
+  vida: string;
+  dano: string;
+  iniciativa: number;
 }
 
 interface SelectablePersonagemCardProps {

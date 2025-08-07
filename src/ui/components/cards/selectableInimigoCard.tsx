@@ -4,10 +4,11 @@ import { Checkbox } from "@/ui/shadcn/components/checkbox";
 import { cn } from "@/lib/utils";
 
 interface Inimigo {
+  id: string;
   nome: string;
-  vida: number;
-  armadura: number;
-  ataque: number;
+  vida: string;
+  armadura: string;
+  ataque: string;
 }
 
 interface SelectableInimigoCardProps {

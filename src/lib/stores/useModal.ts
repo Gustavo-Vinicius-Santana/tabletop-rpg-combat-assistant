@@ -5,10 +5,10 @@ type Personagem = {
   nome: string;
   classe: string;
   raca: string;
-  nivel: number;
-  vida: number;
-  armadura: number;
-  pp: number;
+  nivel: string;
+  vida: string;
+  armadura: string;
+  pp: string;
   iniciativa: number;
   notas?: string;
 };
@@ -16,9 +16,9 @@ type Personagem = {
 type Inimigo = {
   tipo: "inimigo";
   nome: string;
-  vida: number;
-  armadura: number;
-  ataque: number;
+  vida: string;
+  armadura: string;
+  ataque: string;
   notas?: string;
 };
 

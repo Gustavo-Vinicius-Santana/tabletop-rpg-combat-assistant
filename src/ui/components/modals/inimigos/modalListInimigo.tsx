@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import localforage from "localforage";
+
 import { useListInimigoModal } from "@/lib/stores/useModal";
 import {
   Dialog,
@@ -11,35 +14,28 @@ import {
 import { ScrollArea } from "@/ui/shadcn/components/scroll-area";
 import CardInimigo from "@/ui/components/cards/cardInimigo";
 
-const inimigos = [
-  {
-    nome: "Goblin",
-    vida: 30,
-    armadura: 5,
-    ataque: 7,
-  },
-  {
-    nome: "Orc Guerreiro",
-    vida: 80,
-    armadura: 12,
-    ataque: 15,
-  },
-  {
-    nome: "Dragão",
-    vida: 300,
-    armadura: 25,
-    ataque: 40,
-  },
-  {
-    nome: "Guerreiro",
-    vida: 100,
-    armadura: 15,
-    ataque: 20,
-  },
-];
+interface Inimigo {
+  nome: string;
+  vida: string;
+  armadura: string;
+  ataque: string;
+  iniciativa?: number;
+}
 
 export default function ModalListInimigo() {
   const { isOpen, onClose } = useListInimigoModal();
+  const [inimigos, setInimigos] = useState<Inimigo[]>([]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const carregarInimigos = async () => {
+      const dados = await localforage.getItem<Inimigo[]>("inimigos");
+      setInimigos(dados ?? []);
+    };
+
+    carregarInimigos();
+  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -60,6 +56,7 @@ export default function ModalListInimigo() {
                 vida={inimigo.vida}
                 armadura={inimigo.armadura}
                 ataque={inimigo.ataque}
+                iniciativa={inimigo.iniciativa}
               />
             ))}
           </div>

@@ -4,10 +4,10 @@ interface CardPersonagemProps {
   nome: string;
   classe: string;
   raca: string;
-  nivel: number;
-  vida: number;
-  armadura: number;
-  pp: number;
+  nivel: string;
+  vida: string;
+  armadura: string;
+  pp: string;
   iniciativa?: number;
 }
 

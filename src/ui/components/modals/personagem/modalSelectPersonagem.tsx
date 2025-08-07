@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import localForage from "localforage";
+
 import { useSelectPersonagemModal } from "@/lib/stores/useModal";
 import {
   Dialog,
@@ -15,45 +17,45 @@ import { Button } from "@/ui/shadcn/components/button";
 import SelectablePersonagemCard from "@/ui/components/cards/selectablePersonagemCard";
 
 interface Personagem {
+  id: string;
   nome: string;
+  tipo: string;
+  armadura: string;
+  ataque: string;
+  nivel: string;
   classe: string;
   raca: string;
-  nivel: number;
-  vida: number;
-  armadura: number;
-  pp: number;
+  pp: string;
+  vida: string;
+  dano: string;
+  iniciativa: number;
 }
-
-const personagens: Personagem[] = [
-  {
-    nome: "Arthas",
-    classe: "Paladino",
-    raca: "Humano",
-    nivel: 10,
-    vida: 120,
-    armadura: 10,
-    pp: 10,
-  },
-  {
-    nome: "Thrall",
-    classe: "Xamã",
-    raca: "Orc",
-    nivel: 12,
-    vida: 140,
-    armadura: 10,
-    pp: 10,
-  },
-];
 
 export default function ModalSelectPersonagem() {
   const { isOpen, onClose } = useSelectPersonagemModal();
-  const [selected, setSelected] = useState<string[]>([]);
+  const [personagens, setPersonagens] = useState<Personagem[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  const handleToggle = (nome: string) => {
-    setSelected((prev) =>
-      prev.includes(nome) ? prev.filter((n) => n !== nome) : [...prev, nome]
+  const handleToggle = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((n) => n !== id) : [...prev, id]
     );
   };
+
+  const selectedPersonagens = personagens.filter((p) =>
+    selectedIds.includes(p.id)
+  );
+
+  // Carrega personagens armazenados
+  useEffect(() => {
+    const loadPersonagens = async () => {
+      const stored = await localForage.getItem<Personagem[]>("personagens");
+      if (stored) {
+        setPersonagens(stored);
+      }
+    };
+    if (isOpen) loadPersonagens();
+  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -61,26 +63,54 @@ export default function ModalSelectPersonagem() {
         <DialogHeader>
           <DialogTitle>Selecionar Personagens</DialogTitle>
           <DialogDescription>
-            Selecione um ou mais personagens.
+            Selecione um ou mais personagens armazenados.
           </DialogDescription>
         </DialogHeader>
 
         <ScrollArea className="h-[40vh] mt-4">
           <div className="flex flex-col items-center space-y-4">
-            {personagens.map((p) => (
-              <SelectablePersonagemCard
-                key={p.nome}
-                personagem={p}
-                checked={selected.includes(p.nome)}
-                onToggle={() => handleToggle(p.nome)}
-              />
-            ))}
+            {personagens.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                Nenhum personagem cadastrado.
+              </p>
+            ) : (
+              personagens.map((p, index) => (
+                <SelectablePersonagemCard
+                  key={index}
+                  personagem={p}
+                  checked={selectedIds.includes(p.id)}
+                  onToggle={() => handleToggle(p.id)}
+                />
+              ))
+            )}
           </div>
         </ScrollArea>
 
+        {selectedPersonagens.length > 0 && (
+          <div className="mt-4 text-sm text-muted-foreground">
+            <h4 className="font-medium text-foreground mb-2">
+              Personagens Selecionados:
+            </h4>
+            <ul className="list-disc list-inside">
+              {selectedPersonagens.map((p) => (
+                <li key={p.id}>
+                  {p.nome} — {p.classe} {p.nivel}, Vida: {p.vida}, Iniciativa: {p.iniciativa}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <div className="pt-4">
-          <Button disabled={selected.length === 0} className="w-full">
-            Adicionar Personagem{selected.length > 1 ? "s" : ""}
+          <Button
+            disabled={selectedIds.length === 0}
+            className="w-full"
+            onClick={() => {
+              console.log("Personagens selecionados:", selectedPersonagens);
+              onClose();
+            }}
+          >
+            Adicionar Personagem{selectedIds.length > 1 ? "s" : ""}
           </Button>
         </div>
       </DialogContent>

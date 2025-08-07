@@ -1,57 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import localForage from "localforage";
+
 import { columns, Personagem } from "@/ui/components/table/columns";
 import { DataTable } from "@/ui/components/table/data-table";
 import { Button } from "@/ui/shadcn/components/button";
-import { useSelectInimigoModal, useSelectPersonagemModal } from "@/lib/stores/useModal";
-import { on } from "events";
-
-const initialData: Personagem[] = [
-  {
-    nome: "Arthas",
-    classe: "Paladino",
-    raca: "Humano",
-    nivel: 10,
-    vida: 120,
-    armadura: 10,
-    pp: 10,
-  },
-  {
-    nome: "Thrall",
-    classe: "Xamã",
-    raca: "Orc",
-    nivel: 12,
-    vida: 140,
-    armadura: 10,
-    pp: 10,
-  },
-];
+import { useSelectPersonagemModal } from "@/lib/stores/useModal";
 
 export default function Home() {
-  const [data, setData] = useState<Personagem[]>(initialData);
-  const { isOpen, onOpen } = useSelectPersonagemModal();
-  const { onOpen: openMoster } = useSelectInimigoModal();
+  const [data, setData] = useState<Personagem[]>([]);
+  const { onOpen: openPersonagemModal } = useSelectPersonagemModal();
+
+  // Carrega personagens da aventura salvos no localForage
+  useEffect(() => {
+    const loadPersonagensNaAventura = async () => {
+      const stored = await localForage.getItem<Personagem[]>("personagensNaAventura");
+      if (stored) {
+        setData(stored);
+      }
+    };
+    loadPersonagensNaAventura();
+  }, []);
 
   return (
     <div className="p-4 space-y-6">
-      <h1 className="text-2xl font-bold text-center">Lista de Personagens</h1>
+      <h1 className="text-2xl font-bold text-center">Personagens na Aventura</h1>
 
       <DataTable columns={columns} data={data} />
 
       <div className="w-1/2 md:w-1/4 mx-auto flex flex-col gap-2">
-        <Button
-          onClick={() => {
-            onOpen();
-          }}
-        >
-          Adicionar Personagem
-        </Button>
-
+        <Button onClick={openPersonagemModal}>Adicionar Personagem</Button>
         <Button
           variant="destructive"
           size="sm"
-          onClick={() => setData([])}
+          onClick={async () => {
+            await localForage.removeItem("personagensNaAventura");
+            setData([]);
+          }}
         >
           Limpar Tabela
         </Button>
