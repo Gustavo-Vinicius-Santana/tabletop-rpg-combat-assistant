@@ -5,6 +5,7 @@ interface CardInimigoProps {
   vida: number;
   armadura: number;
   ataque: number;
+  iniciativa?: number;
 }
 
 export default function CardInimigo({
@@ -12,6 +13,7 @@ export default function CardInimigo({
   vida,
   armadura,
   ataque,
+  iniciativa,
 }: CardInimigoProps) {
   return (
     <div className="bg-muted border border-border rounded-md p-6 max-w-md mx-auto shadow-sm space-y-4 text-sm text-muted-foreground">
@@ -29,6 +31,12 @@ export default function CardInimigo({
           <span className="font-semibold">Ataque</span>
           <span>{ataque}</span>
         </div>
+        {iniciativa !== undefined && (
+          <div className="flex flex-col items-center col-span-3">
+            <span className="font-semibold">Iniciativa</span>
+            <span>{iniciativa}</span>
+          </div>
+        )}
       </div>
     </div>
   );

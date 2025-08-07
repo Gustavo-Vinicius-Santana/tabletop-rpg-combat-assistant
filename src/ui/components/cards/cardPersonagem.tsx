@@ -8,6 +8,7 @@ interface CardPersonagemProps {
   vida: number;
   armadura: number;
   pp: number;
+  iniciativa?: number;
 }
 
 export default function CardPersonagem({
@@ -18,6 +19,7 @@ export default function CardPersonagem({
   vida,
   armadura,
   pp,
+  iniciativa,
 }: CardPersonagemProps) {
   return (
     <div className="bg-muted border border-border rounded-md p-6 max-w-md mx-auto shadow-sm space-y-4 text-sm text-muted-foreground">
@@ -38,6 +40,12 @@ export default function CardPersonagem({
           <span className="font-semibold">PP</span>
           <span>{pp}</span>
         </div>
+        {iniciativa !== undefined && (
+          <div className="flex flex-col items-center col-span-3">
+            <span className="font-semibold">Iniciativa</span>
+            <span>{iniciativa}</span>
+          </div>
+        )}
       </div>
     </div>
   );

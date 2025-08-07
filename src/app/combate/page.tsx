@@ -218,6 +218,7 @@ export default function Page() {
                     vida={c.vida}
                     armadura={c.armadura}
                     pp={c.pp}
+                    iniciativa={c.iniciativa}
                   />
                 ) : (
                   <CardInimigo
@@ -225,6 +226,7 @@ export default function Page() {
                     vida={c.vida}
                     armadura={c.armadura}
                     ataque={c.ataque}
+                    iniciativa={c.iniciativa}
                   />
                 )}
               </div>
