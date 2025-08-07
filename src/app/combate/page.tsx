@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import CardInimigo from "@/ui/components/cards/cardInimigo";
 import CardPersonagem from "@/ui/components/cards/cardPersonagem";
 import {
+  useCombatInimigoModal,
+  useCombatPersonagemModal,
   useSelectInimigoModal,
   useSelectPersonagemModal,
 } from "@/lib/stores/useModal";
@@ -96,6 +98,9 @@ export default function Page() {
   const { onOpen: openSelectPersonagem } = useSelectPersonagemModal();
   const { onOpen: openSelectInimigo } = useSelectInimigoModal();
 
+  const { onOpen: openPersonagemCombatModal } = useCombatPersonagemModal();
+  const { onOpen: openInimigoCombatModal } = useCombatInimigoModal();
+
   const combatentes: Combatente[] = [...personagens, ...inimigos].sort(
     (a, b) => b.iniciativa - a.iniciativa
   );
@@ -183,10 +188,19 @@ export default function Page() {
             const ativo = index === turnoAtual;
             return (
               <div
+                onClick={() => {
+                  if (c.tipo === "personagem") {
+                    openPersonagemCombatModal(c);
+                    console.log("clicado personagem")
+                  } else {
+                    openInimigoCombatModal(c);
+                    console.log("clicado inimigo")
+                  }
+                }}
                 key={c.nome}
                 className={cn(
-                  "relative transition-all rounded-md",
-                  ativo && "ring-2 ring-primary bg-primary/5 shadow-sm"
+                  "relative transition-all rounded-md cursor-pointer",
+                  ativo && "ring-2 ring-primary bg-primary/5 shadow-sm cursor-pointer"
                 )}
               >
                 {ativo && (
