@@ -23,3 +23,19 @@ export async function removerItemDaLista<T>(
   const novaLista = lista.filter(filtro);
   await salvarLista(chave, novaLista);
 }
+
+export async function limparTodosOsBancos() {
+  const chaves = [
+    "personagens",
+    "inimigos",
+    "personagensNaAventura",
+    "personagensEmCombate",
+    "inimigosEmCombate",
+  ];
+
+  for (const chave of chaves) {
+    await localforage.removeItem(chave);
+  }
+
+  console.log("Todos os bancos foram limpos.");
+}

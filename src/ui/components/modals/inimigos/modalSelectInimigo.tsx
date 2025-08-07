@@ -14,6 +14,7 @@ import { Button } from "@/ui/shadcn/components/button";
 import SelectableInimigoCard from "@/ui/components/cards/selectableInimigoCard";
 
 import localforage from "localforage";
+import { useCombateStore } from "@/lib/stores/useCombat";
 
 interface Inimigo {
   id: string;
@@ -24,7 +25,9 @@ interface Inimigo {
 }
 
 export default function ModalSelectInimigo() {
-  const { isOpen, onClose } = useSelectInimigoModal();
+  const { isOpen, key, onClose } = useSelectInimigoModal();
+  const { toggleAtualizarCombate } = useCombateStore();
+
   const [inimigos, setInimigos] = useState<Inimigo[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
@@ -55,6 +58,23 @@ export default function ModalSelectInimigo() {
   };
 
   const selectedInimigos = inimigos.filter((i) => selected.has(i.nome));
+
+  const handleAddInimigos = async () => {
+    if (!key) return;
+
+    const listaAtual = (await localforage.getItem<Inimigo[]>(key)) || [];
+
+    const novosInimigos = selectedInimigos.filter(
+      (novo) => !listaAtual.some((existente) => existente.id === novo.id)
+    );
+
+    const novaLista = [...listaAtual, ...novosInimigos];
+
+    await localforage.setItem(key, novaLista);
+
+    toggleAtualizarCombate();
+    onClose();
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -106,10 +126,7 @@ export default function ModalSelectInimigo() {
           <Button
             disabled={selected.size === 0}
             className="w-full"
-            onClick={() => {
-              console.log("Inimigos selecionados:", selectedInimigos);
-              onClose();
-            }}
+            onClick={handleAddInimigos}
           >
             Adicionar Inimigos
           </Button>

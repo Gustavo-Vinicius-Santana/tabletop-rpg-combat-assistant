@@ -13,6 +13,8 @@ import {
   useSelectPersonagemModal,
 } from "@/lib/stores/useModal";
 
+import { useCombateStore } from "@/lib/stores/useCombat";
+
 interface Personagem {
   tipo: "personagem";
   nome: string;
@@ -41,6 +43,7 @@ export default function Page() {
   const { onOpen: openSelectInimigo } = useSelectInimigoModal();
   const { onOpen: openPersonagemCombatModal } = useCombatPersonagemModal();
   const { onOpen: openInimigoCombatModal } = useCombatInimigoModal();
+  const { atualizarCombate } = useCombateStore();
 
   const [personagens, setPersonagens] = useState<Personagem[]>([]);
   const [inimigos, setInimigos] = useState<Inimigo[]>([]);
@@ -48,6 +51,7 @@ export default function Page() {
   const [turnoAtual, setTurnoAtual] = useState(0);
   const [rodadaAtual, setRodadaAtual] = useState(1);
   const [tempoCombate, setTempoCombate] = useState(0);
+  
 
   // Carregar dados do localForage
   useEffect(() => {
@@ -60,7 +64,7 @@ export default function Page() {
     };
 
     carregarDados();
-  }, []);
+  }, [atualizarCombate]); 
 
   const combatentes: Combatente[] = [...personagens, ...inimigos].sort(
     (a, b) => b.iniciativa - a.iniciativa
@@ -103,13 +107,13 @@ export default function Page() {
         <div className="sticky top-0 w-full bg-muted border border-border rounded-lg shadow-lg p-4 z-20 backdrop-blur-sm bg-opacity-90 transition-shadow duration-300 hover:shadow-xl flex flex-col items-center gap-3">
           <div className="flex gap-4 w-full max-w-sm">
             <button
-              onClick={openSelectInimigo}
+              onClick={() => openSelectInimigo("inimigosEmCombate")}
               className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md shadow-md transition"
             >
               Adicionar Inimigo
             </button>
             <button
-              onClick={openSelectPersonagem}
+              onClick={() => openSelectPersonagem("personagensEmCombate")}
               className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md shadow-md transition"
             >
               Adicionar Personagem

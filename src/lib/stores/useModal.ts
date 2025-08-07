@@ -37,7 +37,8 @@ type ModalEdit = {
 
 type ModalSelect = {
   isOpen: boolean;
-  onOpen: () => void;
+  key: string;
+  onOpen: (key: string) => void;
   onClose: () => void;
 };
 
@@ -63,7 +64,8 @@ export const useListPersonagemModal = create<ModalEdit>((set) => ({
 
 export const useSelectPersonagemModal = create<ModalSelect>((set) => ({
   isOpen: false,
-  onOpen: () => set({ isOpen: true }),
+  key: "",
+  onOpen: (key) => set({ isOpen: true, key }),
   onClose: () => set({ isOpen: false }),
 }));
 
@@ -89,7 +91,8 @@ export const useListInimigoModal = create<ModalEdit>((set) => ({
 
 export const useSelectInimigoModal = create<ModalSelect>((set) => ({
   isOpen: false,
-  onOpen: () => set({ isOpen: true }),
+  key: "",
+  onOpen: (key) => set({ isOpen: true, key }),
   onClose: () => set({ isOpen: false }),
 }));
 
