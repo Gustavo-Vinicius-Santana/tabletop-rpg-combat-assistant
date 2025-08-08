@@ -57,9 +57,12 @@ export default function ModalSelectInimigo() {
 
     const listaAtual = (await localforage.getItem<Inimigo[]>(key)) || [];
 
-    const novosInimigos = selectedInimigos.filter(
-      (novo) => !listaAtual.some((existente) => existente.id === novo.id)
-    );
+    const novosInimigos = selectedInimigos.map((inimigoBase) => {
+      return {
+        ...inimigoBase,
+        id: crypto.randomUUID(), // ID ÚNICO POR INSERÇÃO
+      };
+    });
 
     const novaLista = [...listaAtual, ...novosInimigos];
 

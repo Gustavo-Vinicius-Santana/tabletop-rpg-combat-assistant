@@ -61,9 +61,12 @@ export default function ModalSelectPersonagem() {
 
     const listaAtual = (await localForage.getItem<Personagem[]>(key)) || [];
 
-    const novos = selectedPersonagens.filter(
-      (novo) => !listaAtual.some((existente) => existente.id === novo.id)
-    );
+    const novos = selectedPersonagens.map((personagemBase) => {
+      return {
+        ...personagemBase,
+        id: crypto.randomUUID(), // Gera um novo ID único
+      };
+    });
 
     const novaLista = [...listaAtual, ...novos];
 

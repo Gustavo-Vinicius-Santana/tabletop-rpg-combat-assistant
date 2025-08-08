@@ -113,7 +113,7 @@ export default function Page() {
             const ativo = index === turnoAtual;
             return (
               <div
-                key={c.nome}
+                key={c.id}
                 onClick={() => {
                   if (c.tipo === "personagem") {
                     openPersonagemCombatModal(c);
