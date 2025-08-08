@@ -48,7 +48,7 @@ export default function ModalCreateInimigo() {
 
     onClose();
     setForm({
-      id: "",
+      id: crypto.randomUUID(),
       tipo: "inimigo",
       nome: "",
       vida: "",

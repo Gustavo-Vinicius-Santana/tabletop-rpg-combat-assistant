@@ -44,7 +44,10 @@ export default function ModalListPersonagem() {
           <div className="flex flex-col items-center space-y-4">
             {personagens.map((p) => (
               <CardPersonagem
-                key={p.nome}
+                key={p.id}
+                id={p.id}
+                tipo={p.tipo}
+                dano={p.dano}
                 nome={p.nome}
                 classe={p.classe}
                 raca={p.raca}

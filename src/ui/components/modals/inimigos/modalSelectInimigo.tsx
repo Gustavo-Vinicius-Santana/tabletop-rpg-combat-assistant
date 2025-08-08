@@ -84,7 +84,7 @@ export default function ModalSelectInimigo() {
             {inimigos.length > 0 ? (
               inimigos.map((inimigo) => (
                 <SelectableInimigoCard
-                  key={inimigo.nome}
+                  key={inimigo.id}
                   inimigo={inimigo}
                   checked={selected.has(inimigo.nome)}
                   onToggle={() => toggleSelect(inimigo.nome)}

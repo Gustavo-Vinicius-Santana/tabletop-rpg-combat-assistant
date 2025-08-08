@@ -46,6 +46,9 @@ export default function ModalListInimigo() {
             {inimigos.map((inimigo) => (
               <CardInimigo
                 key={inimigo.nome}
+                id={inimigo.id}
+                tipo={inimigo.tipo}
+                dano={inimigo.dano}
                 nome={inimigo.nome}
                 vida={inimigo.vida}
                 armadura={inimigo.armadura}

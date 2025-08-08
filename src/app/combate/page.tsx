@@ -134,6 +134,10 @@ export default function Page() {
 
                 {c.tipo === "personagem" ? (
                   <CardPersonagem
+                    key={c.id}
+                    id={c.id}
+                    tipo={c.tipo}
+                    dano={c.dano}
                     nome={c.nome}
                     classe={c.classe}
                     raca={c.raca}
@@ -145,6 +149,10 @@ export default function Page() {
                   />
                 ) : (
                   <CardInimigo
+                    key={c.id}
+                    id={c.id}
+                    tipo={c.tipo}
+                    dano={c.dano}
                     nome={c.nome}
                     vida={c.vida}
                     armadura={c.armadura}

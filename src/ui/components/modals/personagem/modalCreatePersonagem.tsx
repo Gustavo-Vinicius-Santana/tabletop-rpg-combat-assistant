@@ -52,7 +52,7 @@ export default function ModalCreatePersonagem() {
 
     onClose();
     setForm({
-      id: "",             // Precisa criar ID vazio inicialmente
+      id: crypto.randomUUID(),             // Precisa criar ID vazio inicialmente
       tipo: "personagem", // Deve iniciar fixo como "personagem"
       nome: "",
       classe: "",

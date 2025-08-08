@@ -89,7 +89,7 @@ export default function ModalSelectPersonagem() {
             {personagens.length > 0 ? (
               personagens.map((personagem) => (
                 <SelectablePersonagemCard
-                  key={personagem.nome}
+                  key={personagem.id}
                   personagem={personagem}
                   checked={selected.has(personagem.nome)}
                   onToggle={() => toggleSelect(personagem.nome)}
