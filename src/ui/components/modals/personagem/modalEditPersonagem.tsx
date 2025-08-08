@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { Personagem } from "@/lib/types/type";
+import { useEditInimigoModal, useEditPersonagemModal } from "@/lib/stores/useModal";
 import localforage from "localforage";
-
-import { useCreatePersonagemModal } from "@/lib/stores/useModal";
+import { Button } from "@/ui/shadcn/components/button";
 import {
   Dialog,
   DialogContent,
@@ -11,69 +12,55 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/ui/shadcn/components/dialog";
-import { ScrollArea } from "@/ui/shadcn/components/scroll-area";
 import { Input } from "@/ui/shadcn/components/input";
-import { Textarea } from "@/ui/shadcn/components/textarea";
 import { Label } from "@/ui/shadcn/components/label";
-import { Button } from "@/ui/shadcn/components/button";
-import type { Personagem } from "@/lib/types/type";
+import { ScrollArea } from "@/ui/shadcn/components/scroll-area";
+import { Textarea } from "@/ui/shadcn/components/textarea";
+import { useListaStore } from "@/lib/stores/useLIstas";
 
-export default function ModalCreatePersonagem() {
-  const { isOpen, onClose } = useCreatePersonagemModal();
+export default function ModalEditPersonagem() {
+  const { isOpen, data, onClose } = useEditPersonagemModal();
+  const { toggleAtualizarLista } = useListaStore();
 
-  const [form, setForm] = useState<Personagem>({
-    id: crypto.randomUUID(),             // Precisa criar ID vazio inicialmente
-    tipo: "personagem", // Deve iniciar fixo como "personagem"
-    nome: "",
-    classe: "",
-    raca: "",
-    nivel: "",
-    vida: "",
-    armadura: "",
-    pp: "",
-    dano: "",
-    notas: "",
-    iniciativa: 0,
-  });
+  const personagem = data as Personagem | null;
+
+  const [form, setForm] = useState<Personagem | null>(null);
+
+  // Carregar os dados do personagem no form local
+  useEffect(() => {
+    if (personagem && personagem.tipo === "personagem") {
+      setForm(personagem);
+    }
+  }, [personagem]);
 
   const atualizar = (campo: keyof Personagem, valor: string | number) => {
-    setForm((prev) => ({
-      ...prev,
-      [campo]: valor,
-    }));
+    setForm((prev) => (prev ? { ...prev, [campo]: valor } : prev));
   };
 
   const salvar = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form) return;
 
     const lista = (await localforage.getItem<Personagem[]>("personagens")) ?? [];
-    lista.push(form);
-    await localforage.setItem("personagens", lista);
 
+    const atualizada = lista.map((p) => (p.id === form.id ? form : p));
+
+    await localforage.setItem("personagens", atualizada);
+
+    toggleAtualizarLista();
     onClose();
-    setForm({
-      id: "",             // Precisa criar ID vazio inicialmente
-      tipo: "personagem", // Deve iniciar fixo como "personagem"
-      nome: "",
-      classe: "",
-      raca: "",
-      nivel: "",
-      vida: "",
-      armadura: "",
-      pp: "",
-      dano: "",
-      notas: "",
-      iniciativa: 0,
-    });
+    setForm(null);
   };
 
- return (
+  if (!isOpen || !form || form.tipo !== "personagem") return null;
+
+  return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>Criar Personagem</DialogTitle>
+          <DialogTitle>Editar Personagem</DialogTitle>
           <DialogDescription>
-            Preencha os dados para criar um novo personagem.
+            Edite os dados do personagem e salve as alterações.
           </DialogDescription>
         </DialogHeader>
 
@@ -84,6 +71,7 @@ export default function ModalCreatePersonagem() {
                 <Label htmlFor="nome">Nome</Label>
                 <Input
                   id="nome"
+                  name="nome"
                   value={form.nome}
                   onChange={(e) => atualizar("nome", e.target.value)}
                 />
@@ -93,6 +81,7 @@ export default function ModalCreatePersonagem() {
                 <Label htmlFor="classe">Classe</Label>
                 <Input
                   id="classe"
+                  name="classe"
                   value={form.classe}
                   onChange={(e) => atualizar("classe", e.target.value)}
                 />
@@ -102,6 +91,7 @@ export default function ModalCreatePersonagem() {
                 <Label htmlFor="raca">Raça</Label>
                 <Input
                   id="raca"
+                  name="raca"
                   value={form.raca}
                   onChange={(e) => atualizar("raca", e.target.value)}
                 />
@@ -111,8 +101,8 @@ export default function ModalCreatePersonagem() {
                 <Label htmlFor="nivel">Nível</Label>
                 <Input
                   id="nivel"
+                  name="nivel"
                   type="text"
-                  inputMode="numeric"
                   value={form.nivel}
                   onChange={(e) => atualizar("nivel", e.target.value)}
                 />
@@ -122,8 +112,8 @@ export default function ModalCreatePersonagem() {
                 <Label htmlFor="vida">Vida</Label>
                 <Input
                   id="vida"
+                  name="vida"
                   type="text"
-                  inputMode="numeric"
                   value={form.vida}
                   onChange={(e) => atualizar("vida", e.target.value)}
                 />
@@ -133,17 +123,18 @@ export default function ModalCreatePersonagem() {
                 <Label htmlFor="armadura">Armadura</Label>
                 <Input
                   id="armadura"
+                  name="armadura"
                   type="text"
-                  inputMode="numeric"
                   value={form.armadura}
                   onChange={(e) => atualizar("armadura", e.target.value)}
                 />
               </div>
 
               <div>
-                <Label htmlFor="pp">Percepção passiva (PP)</Label>
+                <Label htmlFor="pp">Pontos de Poder (PP)</Label>
                 <Input
                   id="pp"
+                  name="pp"
                   type="text"
                   value={form.pp}
                   onChange={(e) => atualizar("pp", e.target.value)}
@@ -151,12 +142,13 @@ export default function ModalCreatePersonagem() {
               </div>
 
               <div>
-                <Label htmlFor="dano">Dano</Label>
+                <Label htmlFor="iniciativa">Iniciativa</Label>
                 <Input
-                  id="dano"
-                  type="text"
-                  value={form.dano}
-                  onChange={(e) => atualizar("dano", e.target.value)}
+                  id="iniciativa"
+                  name="iniciativa"
+                  type="number"
+                  value={form.iniciativa}
+                  onChange={(e) => atualizar("iniciativa", Number(e.target.value))}
                 />
               </div>
             </div>
@@ -165,15 +157,21 @@ export default function ModalCreatePersonagem() {
               <Label htmlFor="notas">Notas</Label>
               <Textarea
                 id="notas"
-                value={form.notas}
+                name="notas"
+                value={form.notas ?? ""}
                 onChange={(e) => atualizar("notas", e.target.value)}
               />
             </div>
           </ScrollArea>
 
-          <Button type="submit" className="w-full mt-2">
-            Criar Personagem
-          </Button>
+          <div className="flex flex-col gap-2 mt-2">
+            <Button type="submit" className="w-full">
+              Salvar
+            </Button>
+            <Button type="button" variant="outline" className="w-full" onClick={onClose}>
+              Cancelar
+            </Button>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

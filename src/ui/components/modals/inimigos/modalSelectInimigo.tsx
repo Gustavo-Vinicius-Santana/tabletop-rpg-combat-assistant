@@ -11,7 +11,7 @@ import {
 } from "@/ui/shadcn/components/dialog";
 import { ScrollArea } from "@/ui/shadcn/components/scroll-area";
 import { Button } from "@/ui/shadcn/components/button";
-import SelectableInimigoCard from "@/ui/components/cards/selectableInimigoCard";
+import SelectableInimigoCard from "@/ui/components/cards/inimigos/selectableInimigoCard";
 
 import localforage from "localforage";
 import { useCombateStore } from "@/lib/stores/useCombat";

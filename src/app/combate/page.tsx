@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import localforage from "localforage";
 
-import CardInimigo from "@/ui/components/cards/cardInimigo";
-import CardPersonagem from "@/ui/components/cards/cardPersonagem";
+import CardInimigo from "@/ui/components/cards/inimigos/cardInimigo";
+import CardPersonagem from "@/ui/components/cards/personagens/cardPersonagem";
 import {
   useCombatInimigoModal,
   useCombatPersonagemModal,

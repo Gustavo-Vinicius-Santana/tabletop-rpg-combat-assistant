@@ -14,6 +14,8 @@ import ModalListPersonagem from "@/ui/components/modals/personagem/modalLisPerso
 import ModalSelectPersonagem from "@/ui/components/modals/personagem/modalSelectPersonagem";
 import ModalCombatInimigos from "@/ui/components/modals/inimigos/modalCombatInimigos";
 import ModalCombatPersonagem from "@/ui/components/modals/personagem/modalCombatPersonagem";
+import ModalEditInimigo from "@/ui/components/modals/inimigos/modalEditInimigos";
+import ModalEditPersonagem from "@/ui/components/modals/personagem/modalEditPersonagem";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,6 +57,7 @@ export default function RootLayout({
           {/* Modais (já estão fora da main, o que é correto) */}
           <ModalCreateInimigo />
           <ModalListInimigo />
+          <ModalEditInimigo />
           <ModalSelectInimigo />
           <ModalCombatInimigos />
 
@@ -62,6 +65,7 @@ export default function RootLayout({
           <ModalListPersonagem />
           <ModalSelectPersonagem />
           <ModalCombatPersonagem />
+          <ModalEditPersonagem />
         </SidebarProvider>
       </body>
     </html>

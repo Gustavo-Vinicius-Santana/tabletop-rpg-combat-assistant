@@ -1,6 +1,11 @@
 "use client";
 
 import type { Inimigo } from "@/lib/types/type";
+import { useEditInimigoModal } from "@/lib/stores/useModal";
+
+type CardInimigoProps = Inimigo & {
+  onEdit?: boolean;
+};
 
 export default function CardInimigo({
   nome,
@@ -8,9 +13,22 @@ export default function CardInimigo({
   armadura,
   ataque,
   iniciativa,
-}: Inimigo) {
+  onEdit,
+  ...inimigo
+}: CardInimigoProps) {
+  const { onOpen } = useEditInimigoModal();
+
+  const handleClick = () => {
+    if (onEdit) {
+      onOpen({ ...inimigo, nome, vida, armadura, ataque, iniciativa, tipo: "inimigo" });
+    }
+  };
+
   return (
-    <div className="bg-muted border border-border rounded-md p-6 max-w-md mx-auto shadow-sm space-y-4 text-sm text-muted-foreground">
+    <div
+      onClick={handleClick}
+      className="bg-muted border border-border rounded-md p-6 max-w-md mx-auto shadow-sm space-y-4 text-sm text-muted-foreground cursor-pointer hover:shadow-md transition"
+    >
       <h2 className="text-xl font-bold text-foreground text-center">{nome}</h2>
       <div className="grid grid-cols-3 gap-6 text-foreground">
         <div className="flex flex-col items-center">

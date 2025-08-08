@@ -1,6 +1,11 @@
 "use client";
 
 import type { Personagem } from "@/lib/types/type";
+import { useEditPersonagemModal } from "@/lib/stores/useModal";
+
+type CardPersonagemProps = Personagem & {
+  onEdit?: boolean;
+};
 
 export default function CardPersonagem({
   nome,
@@ -11,9 +16,22 @@ export default function CardPersonagem({
   armadura,
   pp,
   iniciativa,
-}: Personagem) {
+  onEdit,
+  ...personagem
+}: CardPersonagemProps) {
+  const { onOpen } = useEditPersonagemModal();
+
+  const handleClick = () => {
+    if (onEdit) {
+      onOpen({ ...personagem, nome, classe, raca, nivel, vida, armadura, pp, iniciativa });
+    }
+  };
+
   return (
-    <div className="bg-muted border border-border rounded-md p-6 max-w-md mx-auto shadow-sm space-y-4 text-sm text-muted-foreground">
+    <div
+      onClick={handleClick}
+      className="bg-muted border border-border rounded-md p-6 max-w-md mx-auto shadow-sm space-y-4 text-sm text-muted-foreground cursor-pointer hover:shadow-md transition"
+    >
       <h2 className="text-xl font-bold text-foreground text-center">{nome}</h2>
       <p className="text-center text-foreground">
         {classe} • {raca} • Nível {nivel}

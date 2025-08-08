@@ -14,7 +14,7 @@ import {
 import { ScrollArea } from "@/ui/shadcn/components/scroll-area";
 import { Button } from "@/ui/shadcn/components/button";
 
-import SelectablePersonagemCard from "@/ui/components/cards/selectablePersonagemCard";
+import SelectablePersonagemCard from "@/ui/components/cards/personagens/selectablePersonagemCard";
 import { useCombateStore } from "@/lib/stores/useCombat";
 import { useAventuraStore } from "@/lib/stores/useAventura";
 import { Personagem } from "@/lib/types/type";

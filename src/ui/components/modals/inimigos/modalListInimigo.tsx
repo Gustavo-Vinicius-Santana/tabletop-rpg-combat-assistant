@@ -12,12 +12,15 @@ import {
   DialogTitle,
 } from "@/ui/shadcn/components/dialog";
 import { ScrollArea } from "@/ui/shadcn/components/scroll-area";
-import CardInimigo from "@/ui/components/cards/cardInimigo";
+import CardInimigo from "@/ui/components/cards/inimigos/cardInimigo";
 
 import type { Inimigo } from "@/lib/types/type";  // Importa o tipo
+import { useListaStore } from "@/lib/stores/useLIstas";
 
 export default function ModalListInimigo() {
   const { isOpen, onClose } = useListInimigoModal();
+  const { atualizarLista } = useListaStore();
+
   const [inimigos, setInimigos] = useState<Inimigo[]>([]);
 
   useEffect(() => {
@@ -29,7 +32,7 @@ export default function ModalListInimigo() {
     };
 
     carregarInimigos();
-  }, [isOpen]);
+  }, [isOpen, atualizarLista]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -46,6 +49,7 @@ export default function ModalListInimigo() {
             {inimigos.map((inimigo) => (
               <CardInimigo
                 key={inimigo.nome}
+                onEdit={true}
                 id={inimigo.id}
                 tipo={inimigo.tipo}
                 dano={inimigo.dano}

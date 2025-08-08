@@ -12,11 +12,14 @@ import {
   DialogTitle,
 } from "@/ui/shadcn/components/dialog";
 import { ScrollArea } from "@/ui/shadcn/components/scroll-area";
-import CardPersonagem from "@/ui/components/cards/cardPersonagem";
+import CardPersonagem from "@/ui/components/cards/personagens/cardPersonagem";
 import type { Personagem } from "@/lib/types/type";
+import { useListaStore } from "@/lib/stores/useLIstas";
 
 export default function ModalListPersonagem() {
   const { isOpen, onClose } = useListPersonagemModal();
+  const { atualizarLista } = useListaStore();
+  
   const [personagens, setPersonagens] = useState<Personagem[]>([]);
 
   useEffect(() => {
@@ -28,7 +31,7 @@ export default function ModalListPersonagem() {
     };
 
     carregarPersonagens();
-  }, [isOpen]);
+  }, [isOpen, atualizarLista]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -46,6 +49,7 @@ export default function ModalListPersonagem() {
               <CardPersonagem
                 key={p.id}
                 id={p.id}
+                onEdit={true}
                 tipo={p.tipo}
                 dano={p.dano}
                 nome={p.nome}
