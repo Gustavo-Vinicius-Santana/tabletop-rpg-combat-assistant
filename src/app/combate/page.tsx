@@ -149,6 +149,7 @@ export default function Page() {
                     openPersonagemCombatModal(c);
                   } else {
                     openInimigoCombatModal(c);
+                    console.log("dados que vão para o modal do inimigo", c);
                   }
                 }}
                 className={cn(

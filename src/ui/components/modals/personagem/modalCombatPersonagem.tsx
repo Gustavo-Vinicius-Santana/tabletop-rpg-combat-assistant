@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import type { Personagem } from "@/lib/types/type";
 import { useCombatPersonagemModal } from "@/lib/stores/useModal";
 import { Button } from "@/ui/shadcn/components/button";
@@ -14,76 +15,180 @@ import { Input } from "@/ui/shadcn/components/input";
 import { Label } from "@/ui/shadcn/components/label";
 import { ScrollArea } from "@/ui/shadcn/components/scroll-area";
 import { Textarea } from "@/ui/shadcn/components/textarea";
+import localforage from "localforage";
+import { useCombateStore } from "@/lib/stores/useCombat";
 
 export default function ModalCombatPersonagem() {
+  const { toggleAtualizarCombate } = useCombateStore();
   const { isOpen, data, onClose } = useCombatPersonagemModal();
 
-  const personagem = data as Personagem | null;
+  const personagemOriginal = data as Personagem | null;
 
-  if (!isOpen || !personagem || personagem.tipo !== "personagem") return null;
+  // Estados locais para edição
+  const [personagem, setPersonagem] = useState<Personagem | null>(null);
+
+  // Inicializa estado local quando abrir modal com dados atuais
+  useEffect(() => {
+    if (isOpen && personagemOriginal && personagemOriginal.tipo === "personagem") {
+      setPersonagem(personagemOriginal);
+    } else {
+      setPersonagem(null);
+    }
+  }, [isOpen, personagemOriginal]);
+
+  if (!isOpen || !personagem) return null;
+
+  // Atualiza campo específico do personagem editado
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    const { name, value } = e.target;
+
+    setPersonagem((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        [name]: name === "nivel" || name === "vida" || name === "armadura" || name === "pp" || name === "iniciativa"
+          ? Number(value)
+          : value,
+      };
+    });
+  }
+
+  // Salva no localforage o personagem editado dentro do array 'personagensEmCombate'
+  async function salvarPersonagem() {
+    if (!personagem) return;
+
+    const personagensSalvos = (await localforage.getItem<Personagem[]>("personagensEmCombate")) || [];
+
+    const personagensAtualizados = personagensSalvos.map((p) =>
+      p.id === personagem.id ? personagem : p
+    );
+
+    await localforage.setItem("personagensEmCombate", personagensAtualizados);
+
+    // Fecha modal após salvar
+    toggleAtualizarCombate();
+    onClose();
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Personagem em Combate</DialogTitle>
-          <DialogDescription>
-            Dados do personagem atualmente em combate.
-          </DialogDescription>
+          <DialogDescription>Dados do personagem atualmente em combate.</DialogDescription>
         </DialogHeader>
 
-        <form className="flex flex-col gap-4">
+        <form
+          className="flex flex-col gap-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            salvarPersonagem();
+          }}
+        >
           <ScrollArea className="h-[60vh] pr-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="nome">Nome</Label>
-                <Input id="nome" name="nome" value={personagem.nome} readOnly />
+                <Input
+                  id="nome"
+                  name="nome"
+                  value={personagem.nome}
+                  onChange={handleChange}
+                />
               </div>
 
               <div>
                 <Label htmlFor="classe">Classe</Label>
-                <Input id="classe" name="classe" value={personagem.classe} readOnly />
+                <Input
+                  id="classe"
+                  name="classe"
+                  value={personagem.classe}
+                  onChange={handleChange}
+                />
               </div>
 
               <div>
                 <Label htmlFor="raca">Raça</Label>
-                <Input id="raca" name="raca" value={personagem.raca} readOnly />
+                <Input
+                  id="raca"
+                  name="raca"
+                  value={personagem.raca}
+                  onChange={handleChange}
+                />
               </div>
 
               <div>
                 <Label htmlFor="nivel">Nível</Label>
-                <Input id="nivel" name="nivel" type="text" value={personagem.nivel} readOnly />
+                <Input
+                  id="nivel"
+                  name="nivel"
+                  type="number"
+                  value={personagem.nivel}
+                  onChange={handleChange}
+                />
               </div>
 
               <div>
                 <Label htmlFor="vida">Vida</Label>
-                <Input id="vida" name="vida" type="text" value={personagem.vida} readOnly />
+                <Input
+                  id="vida"
+                  name="vida"
+                  type="number"
+                  value={personagem.vida}
+                  onChange={handleChange}
+                />
               </div>
 
               <div>
                 <Label htmlFor="armadura">Armadura</Label>
-                <Input id="armadura" name="armadura" type="text" value={personagem.armadura} readOnly />
+                <Input
+                  id="armadura"
+                  name="armadura"
+                  type="number"
+                  value={personagem.armadura}
+                  onChange={handleChange}
+                />
               </div>
 
               <div>
                 <Label htmlFor="pp">Pontos de Poder (PP)</Label>
-                <Input id="pp" name="pp" type="text" value={personagem.pp} readOnly />
+                <Input
+                  id="pp"
+                  name="pp"
+                  type="number"
+                  value={personagem.pp}
+                  onChange={handleChange}
+                />
               </div>
 
               <div>
                 <Label htmlFor="iniciativa">Iniciativa</Label>
-                <Input id="iniciativa" name="iniciativa" type="number" value={personagem.iniciativa} readOnly />
+                <Input
+                  id="iniciativa"
+                  name="iniciativa"
+                  type="number"
+                  value={personagem.iniciativa}
+                  onChange={handleChange}
+                />
               </div>
             </div>
 
             <div className="mt-4">
               <Label htmlFor="notas">Notas</Label>
-              <Textarea id="notas" name="notas" value={personagem.notas ?? ""} readOnly />
+              <Textarea
+                id="notas"
+                name="notas"
+                value={personagem.notas ?? ""}
+                onChange={handleChange}
+              />
             </div>
           </ScrollArea>
 
-          <Button type="button" className="w-full mt-2" onClick={onClose}>
-            Fechar
+          <Button type="submit" className="w-full mt-2">
+            Salvar
+          </Button>
+          <Button type="button" className="w-full mt-2" onClick={onClose} variant="outline">
+            Cancelar
           </Button>
         </form>
       </DialogContent>
