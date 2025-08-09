@@ -15,7 +15,7 @@ import {
 
 import { useCombateStore } from "@/lib/stores/useCombat";
 
-import type { Personagem, Inimigo } from "@/lib/types/type";  // <-- import dos types
+import type { Personagem, Inimigo } from "@/lib/types/type";
 
 type Combatente = Personagem | Inimigo;
 
@@ -29,37 +29,65 @@ export default function Page() {
   const [personagens, setPersonagens] = useState<Personagem[]>([]);
   const [inimigos, setInimigos] = useState<Inimigo[]>([]);
 
+  // Estados do combate que serão persistidos
   const [turnoAtual, setTurnoAtual] = useState(0);
   const [rodadaAtual, setRodadaAtual] = useState(1);
   const [tempoCombate, setTempoCombate] = useState(0);
 
-  // Carregar dados do localForage
+  // Carregar turno, rodada e tempo do localForage
+  useEffect(() => {
+    const carregarDadosCombate = async () => {
+      const turno = await localforage.getItem<number>("turnoAtual");
+      const rodada = await localforage.getItem<number>("rodadaAtual");
+      const tempo = await localforage.getItem<number>("tempoCombate");
+
+      if (typeof turno === "number") setTurnoAtual(turno);
+      if (typeof rodada === "number") setRodadaAtual(rodada);
+      if (typeof tempo === "number") setTempoCombate(tempo);
+    };
+    carregarDadosCombate();
+  }, []);
+
+  // Carregar personagens e inimigos da store ou localforage (mantive sua lógica original)
   useEffect(() => {
     const carregarDados = async () => {
-      const personagensSalvos = await localforage.getItem<Personagem[]>("personagensEmCombate");
+      const personagensSalvos = await localforage.getItem<Personagem[]>(
+        "personagensEmCombate"
+      );
       const inimigosSalvos = await localforage.getItem<Inimigo[]>("inimigosEmCombate");
 
       setPersonagens(personagensSalvos || []);
       setInimigos(inimigosSalvos || []);
     };
-
     carregarDados();
   }, [atualizarCombate]);
+
+  // Removidos os useEffect que salvavam rodadaAtual e tempoCombate separadamente
+  // Vamos salvar tudo junto dentro do proximoTurno para garantir consistência
 
   const combatentes: Combatente[] = [...personagens, ...inimigos].sort(
     (a, b) => b.iniciativa - a.iniciativa
   );
 
-  const proximoTurno = () => {
-    const proximo = turnoAtual + 1;
+  const proximoTurno = async () => {
+    let novoTurno = turnoAtual + 1;
+    let novaRodada = rodadaAtual;
+    let novoTempo = tempoCombate;
 
-    if (proximo >= combatentes.length) {
-      setTurnoAtual(0);
-      setRodadaAtual((prev) => prev + 1);
-      setTempoCombate((prev) => prev + 6);
-    } else {
-      setTurnoAtual(proximo);
+    if (novoTurno >= combatentes.length) {
+      novoTurno = 0;
+      novaRodada = rodadaAtual + 1;
+      novoTempo = tempoCombate + 6;
     }
+
+    setTurnoAtual(novoTurno);
+    setRodadaAtual(novaRodada);
+    setTempoCombate(novoTempo);
+
+    // Salvar os três valores juntos no localForage
+    await localforage.setItem("turnoAtual", novoTurno);
+    await localforage.setItem("rodadaAtual", novaRodada);
+    await localforage.setItem("tempoCombate", novoTempo);
   };
 
   const minutos = Math.floor(tempoCombate / 60);
@@ -74,7 +102,9 @@ export default function Page() {
         <div className="bg-muted border border-border p-4 rounded-md">
           <h2 className="text-lg font-semibold text-foreground mb-3">Estado do Combate</h2>
           <div className="text-sm text-muted-foreground space-y-1">
-            <p>Turno atual: {turnoAtual + 1} / {combatentes.length}</p>
+            <p>
+              Turno atual: {turnoAtual + 1} / {combatentes.length}
+            </p>
             <p>Rodada: {rodadaAtual}</p>
             <p>Tempo transcorrido: {tempoFormatado}</p>
           </div>
