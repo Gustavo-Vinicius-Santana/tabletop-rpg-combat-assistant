@@ -24,10 +24,8 @@ export default function ModalCombatPersonagem() {
 
   const personagemOriginal = data as Personagem | null;
 
-  // Estados locais para edição
   const [personagem, setPersonagem] = useState<Personagem | null>(null);
 
-  // Inicializa estado local quando abrir modal com dados atuais
   useEffect(() => {
     if (isOpen && personagemOriginal && personagemOriginal.tipo === "personagem") {
       setPersonagem(personagemOriginal);
@@ -38,7 +36,6 @@ export default function ModalCombatPersonagem() {
 
   if (!isOpen || !personagem) return null;
 
-  // Atualiza campo específico do personagem editado
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
 
@@ -46,18 +43,23 @@ export default function ModalCombatPersonagem() {
       if (!prev) return null;
       return {
         ...prev,
-        [name]: name === "nivel" || name === "vida" || name === "armadura" || name === "pp" || name === "iniciativa"
-          ? Number(value)
-          : value,
+        [name]:
+          name === "nivel" ||
+          name === "vida" ||
+          name === "armadura" ||
+          name === "pp" ||
+          name === "iniciativa"
+            ? Number(value)
+            : value,
       };
     });
   }
 
-  // Salva no localforage o personagem editado dentro do array 'personagensEmCombate'
   async function salvarPersonagem() {
     if (!personagem) return;
 
-    const personagensSalvos = (await localforage.getItem<Personagem[]>("personagensEmCombate")) || [];
+    const personagensSalvos =
+      (await localforage.getItem<Personagem[]>("personagensEmCombate")) || [];
 
     const personagensAtualizados = personagensSalvos.map((p) =>
       p.id === personagem.id ? personagem : p
@@ -65,7 +67,22 @@ export default function ModalCombatPersonagem() {
 
     await localforage.setItem("personagensEmCombate", personagensAtualizados);
 
-    // Fecha modal após salvar
+    toggleAtualizarCombate();
+    onClose();
+  }
+
+  async function removerPersonagem() {
+    if (!personagem) return;
+
+    const personagensSalvos =
+      (await localforage.getItem<Personagem[]>("personagensEmCombate")) || [];
+
+    const personagensAtualizados = personagensSalvos.filter(
+      (p) => p.id !== personagem.id
+    );
+
+    await localforage.setItem("personagensEmCombate", personagensAtualizados);
+
     toggleAtualizarCombate();
     onClose();
   }
@@ -75,7 +92,9 @@ export default function ModalCombatPersonagem() {
       <DialogContent className="max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Personagem em Combate</DialogTitle>
-          <DialogDescription>Dados do personagem atualmente em combate.</DialogDescription>
+          <DialogDescription>
+            Dados do personagem atualmente em combate.
+          </DialogDescription>
         </DialogHeader>
 
         <form
@@ -85,7 +104,7 @@ export default function ModalCombatPersonagem() {
             salvarPersonagem();
           }}
         >
-          <ScrollArea className="h-[60vh] pr-2">
+          <ScrollArea className="h-[50vh] pr-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="nome">Nome</Label>
@@ -187,7 +206,20 @@ export default function ModalCombatPersonagem() {
           <Button type="submit" className="w-full mt-2">
             Salvar
           </Button>
-          <Button type="button" className="w-full mt-2" onClick={onClose} variant="outline">
+          <Button
+            type="button"
+            className="w-full mt-2"
+            variant="destructive"
+            onClick={removerPersonagem}
+          >
+            Remover do combate
+          </Button>
+          <Button
+            type="button"
+            className="w-full mt-2"
+            onClick={onClose}
+            variant="outline"
+          >
             Cancelar
           </Button>
         </form>

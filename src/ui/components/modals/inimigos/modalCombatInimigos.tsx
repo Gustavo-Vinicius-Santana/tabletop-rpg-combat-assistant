@@ -36,13 +36,15 @@ export default function ModalCombatInimigos() {
 
   if (!isOpen || !inimigo) return null;
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
     const { name, value } = e.target;
 
     setInimigo((prev) => {
       if (!prev) return null;
 
-      // Se for iniciativa, converte para number, senão deixa string
+      // Se for iniciativa, converte para number
       if (name === "iniciativa") {
         return { ...prev, [name]: Number(value) };
       }
@@ -54,10 +56,27 @@ export default function ModalCombatInimigos() {
   async function salvarInimigo() {
     if (!inimigo) return;
 
-    const inimigosSalvos = (await localforage.getItem<Inimigo[]>("inimigosEmCombate")) || [];
+    const inimigosSalvos =
+      (await localforage.getItem<Inimigo[]>("inimigosEmCombate")) || [];
 
     const inimigosAtualizados = inimigosSalvos.map((i) =>
       i.id === inimigo.id ? inimigo : i
+    );
+
+    await localforage.setItem("inimigosEmCombate", inimigosAtualizados);
+
+    toggleAtualizarCombate();
+    onClose();
+  }
+
+  async function removerInimigo() {
+    if (!inimigo) return;
+
+    const inimigosSalvos =
+      (await localforage.getItem<Inimigo[]>("inimigosEmCombate")) || [];
+
+    const inimigosAtualizados = inimigosSalvos.filter(
+      (i) => i.id !== inimigo.id
     );
 
     await localforage.setItem("inimigosEmCombate", inimigosAtualizados);
@@ -83,7 +102,7 @@ export default function ModalCombatInimigos() {
             salvarInimigo();
           }}
         >
-          <ScrollArea className="h-[60vh] pr-2">
+          <ScrollArea className="h-[50vh] pr-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="nome">Nome</Label>
@@ -151,7 +170,20 @@ export default function ModalCombatInimigos() {
           <Button type="submit" className="w-full mt-2">
             Salvar
           </Button>
-          <Button type="button" className="w-full mt-2" onClick={onClose} variant="outline">
+          <Button
+            type="button"
+            className="w-full mt-2"
+            variant="destructive"
+            onClick={removerInimigo}
+          >
+            Remover do combate
+          </Button>
+          <Button
+            type="button"
+            className="w-full mt-2"
+            onClick={onClose}
+            variant="outline"
+          >
             Cancelar
           </Button>
         </form>
