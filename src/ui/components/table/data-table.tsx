@@ -27,6 +27,7 @@ import {
 } from "@/ui/shadcn/components/dropdown-menu";
 import { Button } from "@/ui/shadcn/components/button";
 import { ChevronDown, ArrowUpDown } from "lucide-react";
+import { useTabelaPersonagemModal } from "@/lib/stores/useModal";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,6 +38,8 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const { onOpen } = useTabelaPersonagemModal();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -54,6 +57,12 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
   });
 
+  // Função que será chamada ao clicar no nome
+  function openModalTabela(personagem: any) {
+    console.log("Abrindo modal para personagem:", personagem);
+    onOpen(personagem); // passa o objeto completo para o store
+  }
+
   return (
     <div className="space-y-4">
       {/* Dropdown para selecionar colunas visíveis */}
@@ -67,12 +76,14 @@ export function DataTable<TData, TValue>({
           <DropdownMenuContent align="end" className="w-48">
             {table
               .getAllColumns()
-              .filter(column => column.getCanHide())
-              .map(column => (
+              .filter((column) => column.getCanHide())
+              .map((column) => (
                 <DropdownMenuCheckboxItem
                   key={column.id}
                   checked={column.getIsVisible()}
-                  onCheckedChange={value => column.toggleVisibility(!!value)}
+                  onCheckedChange={(value) =>
+                    column.toggleVisibility(!!value)
+                  }
                 >
                   {column.columnDef.header as string}
                 </DropdownMenuCheckboxItem>
@@ -85,9 +96,9 @@ export function DataTable<TData, TValue>({
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
+            {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => {
+                {headerGroup.headers.map((header) => {
                   const isSorted = header.column.getIsSorted();
                   const canSort = header.column.getCanSort();
 
@@ -95,9 +106,13 @@ export function DataTable<TData, TValue>({
                     <TableHead
                       key={header.id}
                       onClick={
-                        canSort ? () => header.column.toggleSorting() : undefined
+                        canSort
+                          ? () => header.column.toggleSorting()
+                          : undefined
                       }
-                      className={canSort ? "cursor-pointer select-none" : ""}
+                      className={
+                        canSort ? "cursor-pointer select-none" : ""
+                      }
                     >
                       <div className="flex items-center gap-1">
                         {flexRender(
@@ -107,7 +122,7 @@ export function DataTable<TData, TValue>({
                         {canSort && (
                           <ArrowUpDown
                             className={`w-4 h-4 transition-opacity ${
-                            isSorted ? "opacity-100" : "opacity-30"
+                              isSorted ? "opacity-100" : "opacity-30"
                             }`}
                           />
                         )}
@@ -121,10 +136,22 @@ export function DataTable<TData, TValue>({
 
           <TableBody>
             {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map(row => (
+              table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      onClick={() => {
+                        if (cell.column.id === "nome") {
+                          openModalTabela(row.original); // <-- passa o personagem completo
+                        }
+                      }}
+                      className={
+                        cell.column.id === "nome"
+                          ? "cursor-pointer text-blue-600 hover:underline"
+                          : ""
+                      }
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

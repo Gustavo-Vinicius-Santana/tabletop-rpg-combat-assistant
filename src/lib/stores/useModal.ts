@@ -62,6 +62,13 @@ export const useCombatPersonagemModal = create<ModalOnCombat>((set) => ({
   onClose: () => set({ isOpen: false }),
 }))
 
+export const useTabelaPersonagemModal = create<ModalOnCombat>((set) => ({
+  isOpen: false,
+  data: null,
+  onOpen: (data) => set({ isOpen: true, data }),
+  onClose: () => set({ isOpen: false }),
+}))
+
 export const useEditPersonagemModal = create<ModalEdit>((set) => ({
   isOpen: false,
   data: null,
