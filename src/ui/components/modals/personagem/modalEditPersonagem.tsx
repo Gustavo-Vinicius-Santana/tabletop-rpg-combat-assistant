@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Personagem } from "@/lib/types/type";
-import { useEditInimigoModal, useEditPersonagemModal } from "@/lib/stores/useModal";
+import { useEditPersonagemModal } from "@/lib/stores/useModal";
 import localforage from "localforage";
 import { Button } from "@/ui/shadcn/components/button";
 import {
@@ -23,7 +23,6 @@ export default function ModalEditPersonagem() {
   const { toggleAtualizarLista } = useListaStore();
 
   const personagem = data as Personagem | null;
-
   const [form, setForm] = useState<Personagem | null>(null);
 
   // Carregar os dados do personagem no form local
@@ -42,9 +41,19 @@ export default function ModalEditPersonagem() {
     if (!form) return;
 
     const lista = (await localforage.getItem<Personagem[]>("personagens")) ?? [];
-
     const atualizada = lista.map((p) => (p.id === form.id ? form : p));
+    await localforage.setItem("personagens", atualizada);
 
+    toggleAtualizarLista();
+    onClose();
+    setForm(null);
+  };
+
+  const remover = async () => {
+    if (!form) return;
+
+    const lista = (await localforage.getItem<Personagem[]>("personagens")) ?? [];
+    const atualizada = lista.filter((p) => p.id !== form.id);
     await localforage.setItem("personagens", atualizada);
 
     toggleAtualizarLista();
@@ -65,8 +74,9 @@ export default function ModalEditPersonagem() {
         </DialogHeader>
 
         <form onSubmit={salvar} className="flex flex-col gap-4">
-          <ScrollArea className="h-[60vh] pr-2">
+          <ScrollArea className="h-[50vh] pr-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Campos do personagem */}
               <div>
                 <Label htmlFor="nome">Nome</Label>
                 <Input
@@ -167,6 +177,9 @@ export default function ModalEditPersonagem() {
           <div className="flex flex-col gap-2 mt-2">
             <Button type="submit" className="w-full">
               Salvar
+            </Button>
+            <Button type="button" variant="destructive" className="w-full" onClick={remover}>
+              Remover Personagem
             </Button>
             <Button type="button" variant="outline" className="w-full" onClick={onClose}>
               Cancelar

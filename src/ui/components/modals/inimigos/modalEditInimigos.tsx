@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Inimigo } from "@/lib/types/type";
-import { useEditInimigoModal, useEditPersonagemModal } from "@/lib/stores/useModal";
+import { useEditInimigoModal } from "@/lib/stores/useModal";
 import localforage from "localforage";
 import { Button } from "@/ui/shadcn/components/button";
 import {
@@ -19,14 +19,12 @@ import { Textarea } from "@/ui/shadcn/components/textarea";
 import { useListaStore } from "@/lib/stores/useLIstas";
 
 export default function ModalEditInimigo() {
-  const { isOpen, data, onClose } = useEditInimigoModal(); // nome está `useEditPersonagemModal`, mas edita inimigo
+  const { isOpen, data, onClose } = useEditInimigoModal();
   const { toggleAtualizarLista } = useListaStore();
 
   const inimigo = data as Inimigo | null;
-
   const [form, setForm] = useState<Inimigo | null>(null);
 
-  // Carrega os dados no estado ao abrir o modal
   useEffect(() => {
     if (inimigo && inimigo.tipo === "inimigo") {
       setForm(inimigo);
@@ -42,9 +40,19 @@ export default function ModalEditInimigo() {
     if (!form) return;
 
     const lista = (await localforage.getItem<Inimigo[]>("inimigos")) ?? [];
-
     const atualizada = lista.map((i) => (i.id === form.id ? form : i));
+    await localforage.setItem("inimigos", atualizada);
 
+    toggleAtualizarLista();
+    onClose();
+    setForm(null);
+  };
+
+  const remover = async () => {
+    if (!form) return;
+
+    const lista = (await localforage.getItem<Inimigo[]>("inimigos")) ?? [];
+    const atualizada = lista.filter((i) => i.id !== form.id);
     await localforage.setItem("inimigos", atualizada);
 
     toggleAtualizarLista();
@@ -65,7 +73,7 @@ export default function ModalEditInimigo() {
         </DialogHeader>
 
         <form onSubmit={salvar} className="flex flex-col gap-4">
-          <ScrollArea className="h-[60vh] pr-2">
+          <ScrollArea className="h-[50vh] pr-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="nome">Nome</Label>
@@ -122,9 +130,12 @@ export default function ModalEditInimigo() {
             </div>
           </ScrollArea>
 
-          <div className="flex flex-col gap-2 mt-2 ">
+          <div className="flex flex-col gap-2 mt-2">
             <Button type="submit" className="w-full">
               Salvar
+            </Button>
+            <Button type="button" variant="destructive" className="w-full" onClick={remover}>
+              Remover Inimigo
             </Button>
             <Button type="button" variant="outline" className="w-full" onClick={onClose}>
               Cancelar
