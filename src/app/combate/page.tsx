@@ -9,13 +9,17 @@ import CardPersonagem from "@/ui/components/cards/personagens/cardPersonagem";
 import {
   useCombatInimigoModal,
   useCombatPersonagemModal,
+  useEditCombatModal,
   useSelectInimigoModal,
   useSelectPersonagemModal,
 } from "@/lib/stores/useModal";
 
+import { Pencil } from "lucide-react";
+
 import { useCombateStore } from "@/lib/stores/useCombat";
 
 import type { Personagem, Inimigo } from "@/lib/types/type";
+import { Button } from "@/ui/shadcn/components/button";
 
 type Combatente = Personagem | Inimigo;
 
@@ -25,6 +29,7 @@ export default function Page() {
   const { onOpen: openPersonagemCombatModal } = useCombatPersonagemModal();
   const { onOpen: openInimigoCombatModal } = useCombatInimigoModal();
   const { atualizarCombate } = useCombateStore();
+  const { onOpen: openEditCombat } = useEditCombatModal();
 
   const [personagens, setPersonagens] = useState<Personagem[]>([]);
   const [inimigos, setInimigos] = useState<Inimigo[]>([]);
@@ -46,7 +51,7 @@ export default function Page() {
       if (typeof tempo === "number") setTempoCombate(tempo);
     };
     carregarDadosCombate();
-  }, []);
+  }, [atualizarCombate]);
 
   // Carregar personagens e inimigos da store ou localforage (mantive sua lógica original)
   useEffect(() => {
@@ -94,13 +99,35 @@ export default function Page() {
   const segundos = tempoCombate % 60;
   const tempoFormatado = `${minutos}:${segundos.toString().padStart(2, "0")}`;
 
+  const onEdit = () => {
+    console.log("Editando combate...");
+    openEditCombat({
+      turno: turnoAtual + 1,
+      rodada: rodadaAtual,
+      tempo: tempoFormatado,
+    });
+  };
+
   return (
     <div className="w-full min-h-screen px-6 py-10 bg-background flex flex-col items-center">
       <h1 className="text-3xl font-bold text-foreground mb-6">Combate</h1>
 
       <div className="w-full max-w-4xl flex flex-col gap-4 mb-6">
         <div className="bg-muted border border-border p-4 rounded-md">
-          <h2 className="text-lg font-semibold text-foreground mb-3">Estado do Combate</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-foreground">
+              Estado do Combate
+            </h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onEdit}
+              className="h-8 w-8 cursor-pointer"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </div>
+
           <div className="text-sm text-muted-foreground space-y-1">
             <p>
               Turno atual: {turnoAtual + 1} / {combatentes.length}

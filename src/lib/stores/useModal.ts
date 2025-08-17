@@ -34,6 +34,17 @@ type ModalEdit = {
   onOpen: (data: Personagem | Inimigo) => void;
   onClose: () => void;
 }
+type Combat = {
+  turno: number;
+  rodada: number;
+  tempo: string;
+}
+type ModalEditCombat = {
+  isOpen: boolean;
+  data: Combat | null;
+  onOpen: (data: Combat) => void;
+  onClose: () => void;
+}
 
 
 export const useCreatePersonagemModal = create<ModalCreate>((set) => ({
@@ -104,6 +115,16 @@ export const useCombatInimigoModal = create<ModalOnCombat>((set) => ({
 }))
 
 export const useEditInimigoModal = create<ModalEdit>((set) => ({
+  isOpen: false,
+  data: null,
+  onOpen: (data) => set({ isOpen: true, data }),
+  onClose: () => set({ isOpen: false }),
+}))
+
+
+// EDIÇÃO
+
+export const useEditCombatModal = create<ModalEditCombat>((set) => ({
   isOpen: false,
   data: null,
   onOpen: (data) => set({ isOpen: true, data }),
