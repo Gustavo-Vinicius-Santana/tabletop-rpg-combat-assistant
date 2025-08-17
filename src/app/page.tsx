@@ -7,7 +7,6 @@ import { columns } from "@/ui/components/table/columns";
 import { DataTable } from "@/ui/components/table/data-table";
 import { Button } from "@/ui/shadcn/components/button";
 import { useSelectPersonagemModal } from "@/lib/stores/useModal";
-import { limparTodosOsBancos } from "@/lib/storage/storage";
 import { useAventuraStore } from "@/lib/stores/useAventura";
 
 import type { Personagem } from "@/lib/types/type"; // <-- use os types centralizados aqui
@@ -24,7 +23,6 @@ export default function Home() {
         setData(stored);
       }
     };
-    //limparTodosOsBancos();
     loadPersonagensNaAventura();
   }, [atualizarAventura]);
 

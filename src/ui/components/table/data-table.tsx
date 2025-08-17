@@ -28,16 +28,14 @@ import {
 import { Button } from "@/ui/shadcn/components/button";
 import { ChevronDown, ArrowUpDown } from "lucide-react";
 import { useTabelaPersonagemModal } from "@/lib/stores/useModal";
+import type { Personagem } from "@/lib/types/type";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps {
+  columns: ColumnDef<Personagem>[];
+  data: Personagem[];
 }
 
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
+export function DataTable({ columns, data }: DataTableProps) {
   const { onOpen } = useTabelaPersonagemModal();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -57,10 +55,10 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
   });
 
-  // Função que será chamada ao clicar no nome
-  function openModalTabela(personagem: any) {
+  // Tipagem correta: personagem é Personagem
+  function openModalTabela(personagem: Personagem) {
     console.log("Abrindo modal para personagem:", personagem);
-    onOpen(personagem); // passa o objeto completo para o store
+    onOpen(personagem);
   }
 
   return (
@@ -110,9 +108,7 @@ export function DataTable<TData, TValue>({
                           ? () => header.column.toggleSorting()
                           : undefined
                       }
-                      className={
-                        canSort ? "cursor-pointer select-none" : ""
-                      }
+                      className={canSort ? "cursor-pointer select-none" : ""}
                     >
                       <div className="flex items-center gap-1">
                         {flexRender(
@@ -143,7 +139,7 @@ export function DataTable<TData, TValue>({
                       key={cell.id}
                       onClick={() => {
                         if (cell.column.id === "nome") {
-                          openModalTabela(row.original); // <-- passa o personagem completo
+                          openModalTabela(row.original); // agora é Personagem
                         }
                       }}
                       className={

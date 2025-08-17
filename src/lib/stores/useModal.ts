@@ -22,9 +22,9 @@ type ModalSelect = {
 };
 
 type ModalOnCombat = {
-  data: Personagem | Inimigo | null;
+  data: Personagem | Inimigo | null | string;
   isOpen: boolean;
-  onOpen: (data: Personagem | Inimigo) => void;
+  onOpen: (data: Personagem | Inimigo | string) => void;
   onClose: () => void;
 }
 
