@@ -1,0 +1,228 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import localforage from "localforage";
+
+import CardInimigo from "@/ui/components/cards/inimigos/cardInimigo";
+import CardPersonagem from "@/ui/components/cards/personagens/cardPersonagem";
+import {
+  useCombatInimigoModal,
+  useCombatPersonagemModal,
+  useEditCombatModal,
+  useSelectInimigoModal,
+  useSelectPersonagemModal,
+} from "@/lib/stores/useModal";
+
+import { Pencil } from "lucide-react";
+
+import { useCombateStore } from "@/lib/stores/useCombat";
+
+import type { Personagem, Inimigo } from "@/lib/types/type";
+import { Button } from "@/ui/shadcn/components/button";
+
+type Combatente = Personagem | Inimigo;
+
+export default function Page() {
+  const { onOpen: openSelectPersonagem } = useSelectPersonagemModal();
+  const { onOpen: openSelectInimigo } = useSelectInimigoModal();
+  const { onOpen: openPersonagemCombatModal } = useCombatPersonagemModal();
+  const { onOpen: openInimigoCombatModal } = useCombatInimigoModal();
+  const { atualizarCombate } = useCombateStore();
+  const { onOpen: openEditCombat } = useEditCombatModal();
+
+  const [personagens, setPersonagens] = useState<Personagem[]>([]);
+  const [inimigos, setInimigos] = useState<Inimigo[]>([]);
+
+  // Estados do combate que serão persistidos
+  const [turnoAtual, setTurnoAtual] = useState(0);
+  const [rodadaAtual, setRodadaAtual] = useState(1);
+  const [tempoCombate, setTempoCombate] = useState(0);
+
+  // Carregar turno, rodada e tempo do localForage
+  useEffect(() => {
+    const carregarDadosCombate = async () => {
+      const turno = await localforage.getItem<number>("turnoAtual");
+      const rodada = await localforage.getItem<number>("rodadaAtual");
+      const tempo = await localforage.getItem<number>("tempoCombate");
+
+      if (typeof turno === "number") setTurnoAtual(turno);
+      if (typeof rodada === "number") setRodadaAtual(rodada);
+      if (typeof tempo === "number") setTempoCombate(tempo);
+    };
+    carregarDadosCombate();
+  }, [atualizarCombate]);
+
+  // Carregar personagens e inimigos da store ou localforage (mantive sua lógica original)
+  useEffect(() => {
+    const carregarDados = async () => {
+      const personagensSalvos = await localforage.getItem<Personagem[]>(
+        "personagensEmCombate"
+      );
+      const inimigosSalvos = await localforage.getItem<Inimigo[]>("inimigosEmCombate");
+
+      setPersonagens(personagensSalvos || []);
+      setInimigos(inimigosSalvos || []);
+    };
+    carregarDados();
+  }, [atualizarCombate]);
+
+  // Removidos os useEffect que salvavam rodadaAtual e tempoCombate separadamente
+  // Vamos salvar tudo junto dentro do proximoTurno para garantir consistência
+
+  const combatentes: Combatente[] = [...personagens, ...inimigos].sort(
+    (a, b) => b.iniciativa - a.iniciativa
+  );
+
+  const proximoTurno = async () => {
+    let novoTurno = turnoAtual + 1;
+    let novaRodada = rodadaAtual;
+    let novoTempo = tempoCombate;
+
+    if (novoTurno >= combatentes.length) {
+      novoTurno = 0;
+      novaRodada = rodadaAtual + 1;
+      novoTempo = tempoCombate + 6;
+    }
+
+    setTurnoAtual(novoTurno);
+    setRodadaAtual(novaRodada);
+    setTempoCombate(novoTempo);
+
+    // Salvar os três valores juntos no localForage
+    await localforage.setItem("turnoAtual", novoTurno);
+    await localforage.setItem("rodadaAtual", novaRodada);
+    await localforage.setItem("tempoCombate", novoTempo);
+  };
+
+  const minutos = Math.floor(tempoCombate / 60);
+  const segundos = tempoCombate % 60;
+  const tempoFormatado = `${minutos}:${segundos.toString().padStart(2, "0")}`;
+
+  const onEdit = () => {
+    console.log("Editando combate...");
+    openEditCombat({
+      turno: turnoAtual + 1,
+      rodada: rodadaAtual,
+      tempo: tempoFormatado,
+    });
+  };
+
+  return (
+    <div className="w-full min-h-screen px-6 py-10 bg-background flex flex-col items-center">
+      <h1 className="text-3xl font-bold text-foreground mb-6">Combate</h1>
+
+      <div className="w-full max-w-4xl flex flex-col gap-4 mb-6">
+        <div className="bg-muted border border-border p-4 rounded-md">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-foreground">
+              Estado do Combate
+            </h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onEdit}
+              className="h-8 w-8 cursor-pointer"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className="text-sm text-muted-foreground space-y-1">
+            <p>
+              Turno atual: {turnoAtual + 1} / {combatentes.length}
+            </p>
+            <p>Rodada: {rodadaAtual}</p>
+            <p>Tempo transcorrido: {tempoFormatado}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="w-full max-w-4xl bg-muted border border-border p-4 rounded-md flex flex-col gap-4">
+        <h2 className="text-lg font-semibold text-foreground">Combate</h2>
+
+        <div className="sticky top-0 w-full bg-muted border border-border rounded-lg shadow-lg p-4 z-20 backdrop-blur-sm bg-opacity-90 transition-shadow duration-300 hover:shadow-xl flex flex-col items-center gap-3">
+          <div className="flex gap-4 w-full max-w-sm">
+            <button
+              onClick={() => openSelectInimigo("inimigosEmCombate")}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md shadow-md transition"
+            >
+              Adicionar Inimigo
+            </button>
+            <button
+              onClick={() => openSelectPersonagem("personagensEmCombate")}
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md shadow-md transition"
+            >
+              Adicionar Personagem
+            </button>
+          </div>
+
+          <button
+            onClick={proximoTurno}
+            className="w-48 bg-zinc-300 hover:bg-zinc-400 text-zinc-900 font-semibold py-2 rounded-md shadow-md transition"
+          >
+            {turnoAtual + 1 === combatentes.length ? "Próxima rodada" : "Próximo turno"}
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-6">
+          {combatentes.map((c, index) => {
+            const ativo = index === turnoAtual;
+            return (
+              <div
+                key={c.id}
+                onClick={() => {
+                  if (c.tipo === "personagem") {
+                    openPersonagemCombatModal(c);
+                  } else {
+                    openInimigoCombatModal(c);
+                    console.log("dados que vão para o modal do inimigo", c);
+                  }
+                }}
+                className={cn(
+                  "relative transition-all rounded-md cursor-pointer",
+                  ativo && "ring-2 ring-primary bg-primary/5 shadow-sm"
+                )}
+              >
+                {ativo && (
+                  <div className="absolute top-2 right-2 bg-primary text-zinc-900 text-xs px-2 py-1 rounded shadow">
+                    É a vez dele!
+                  </div>
+                )}
+
+                {c.tipo === "personagem" ? (
+                  <CardPersonagem
+                    key={c.id}
+                    id={c.id}
+                    tipo={c.tipo}
+                    dano={c.dano}
+                    nome={c.nome}
+                    classe={c.classe}
+                    raca={c.raca}
+                    nivel={c.nivel}
+                    vida={c.vida}
+                    armadura={c.armadura}
+                    pp={c.pp}
+                    iniciativa={c.iniciativa}
+                  />
+                ) : (
+                  <CardInimigo
+                    key={c.id}
+                    id={c.id}
+                    tipo={c.tipo}
+                    dano={c.dano}
+                    nome={c.nome}
+                    vida={c.vida}
+                    armadura={c.armadura}
+                    ataque={c.ataque}
+                    iniciativa={c.iniciativa}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
