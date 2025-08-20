@@ -35,7 +35,7 @@ export default function ModalListPersonagem() {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[80vh]">
+      <DialogContent className="w-full max-w-[350px] h-[70vh]">
         <DialogHeader>
           <DialogTitle>Lista de Personagens</DialogTitle>
           <DialogDescription>

@@ -74,7 +74,7 @@ export default function ModalSelectInimigo() {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[80vh]">
+      <DialogContent className="max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>Selecionar Inimigos</DialogTitle>
           <DialogDescription>

@@ -55,14 +55,12 @@ export function DataTable({ columns, data }: DataTableProps) {
     onColumnVisibilityChange: setColumnVisibility,
   });
 
-  // Tipagem correta: personagem é Personagem
   function openModalTabela(personagem: Personagem) {
-    console.log("Abrindo modal para personagem:", personagem);
     onOpen(personagem);
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-w-[375px] md:max-w-full">
       {/* Dropdown para selecionar colunas visíveis */}
       <div className="flex justify-end">
         <DropdownMenu>
@@ -90,9 +88,10 @@ export function DataTable({ columns, data }: DataTableProps) {
         </DropdownMenu>
       </div>
 
-      {/* Tabela */}
-      <div className="rounded-md border">
-        <Table>
+      {/* Container responsivo */}
+      <div className="rounded-md border overflow-x-auto">
+        <Table className="min-w-[600px]"> 
+          {/* 👆 garante largura mínima e força scroll no mobile */}
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -139,7 +138,7 @@ export function DataTable({ columns, data }: DataTableProps) {
                       key={cell.id}
                       onClick={() => {
                         if (cell.column.id === "nome") {
-                          openModalTabela(row.original); // agora é Personagem
+                          openModalTabela(row.original);
                         }
                       }}
                       className={

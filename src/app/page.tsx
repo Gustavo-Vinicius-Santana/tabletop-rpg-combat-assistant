@@ -9,7 +9,7 @@ import { Button } from "@/ui/shadcn/components/button";
 import { useSelectPersonagemModal } from "@/lib/stores/useModal";
 import { useAventuraStore } from "@/lib/stores/useAventura";
 
-import type { Personagem } from "@/lib/types/type"; // <-- use os types centralizados aqui
+import type { Personagem } from "@/lib/types/type";
 
 export default function Home() {
   const [data, setData] = useState<Personagem[]>([]);
@@ -18,7 +18,9 @@ export default function Home() {
 
   useEffect(() => {
     const loadPersonagensNaAventura = async () => {
-      const stored = await localForage.getItem<Personagem[]>("personagensNaAventura");
+      const stored = await localForage.getItem<Personagem[]>(
+        "personagensNaAventura"
+      );
       if (stored) {
         setData(stored);
       }
@@ -27,16 +29,26 @@ export default function Home() {
   }, [atualizarAventura]);
 
   return (
-    <div className="p-4 space-y-6">
-      <h1 className="text-2xl font-bold text-center">Personagens na Aventura</h1>
+    <div className="w-full min-h-screen px-4 py-8 bg-background flex flex-col items-center overflow-x-hidden">
+      <h1 className="text-2xl font-bold text-center mb-6">
+        Personagens na Aventura
+      </h1>
 
-      <DataTable columns={columns} data={data} />
+      {/* Wrapper com scroll horizontal em telas pequenas */}
+      <div className="w-full max-w-full overflow-x-auto">
+        <DataTable columns={columns} data={data} />
+      </div>
 
-      <div className="w-1/2 md:w-1/4 mx-auto flex flex-col gap-2">
-        <Button onClick={() => openPersonagemModal("personagensNaAventura")}>
+      {/* Botões responsivos */}
+      <div className="w-full max-w-sm mx-auto mt-6 flex flex-col gap-2 px-2">
+        <Button
+          className="w-full"
+          onClick={() => openPersonagemModal("personagensNaAventura")}
+        >
           Adicionar Personagem
         </Button>
         <Button
+          className="w-full"
           variant="destructive"
           size="sm"
           onClick={async () => {
