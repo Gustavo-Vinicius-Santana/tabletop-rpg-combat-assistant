@@ -17,12 +17,13 @@ import { Textarea } from "@/ui/shadcn/components/textarea";
 import { Label } from "@/ui/shadcn/components/label";
 import { Button } from "@/ui/shadcn/components/button";
 import { Inimigo } from "@/lib/types/type";
+import { v4 as uuidv4 } from "uuid";
 
 export default function ModalCreateInimigo() {
   const { isOpen, onClose } = useCreateInimigoModal();
 
   const [form, setForm] = useState<Inimigo>({
-    id: crypto.randomUUID(),
+    id: uuidv4(),
     tipo: "inimigo",
     nome: "",
     vida: "",

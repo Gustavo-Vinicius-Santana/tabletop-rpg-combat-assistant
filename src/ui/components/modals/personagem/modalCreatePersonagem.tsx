@@ -17,12 +17,13 @@ import { Textarea } from "@/ui/shadcn/components/textarea";
 import { Label } from "@/ui/shadcn/components/label";
 import { Button } from "@/ui/shadcn/components/button";
 import type { Personagem } from "@/lib/types/type";
+import { v4 as uuidv4 } from "uuid";
 
 export default function ModalCreatePersonagem() {
   const { isOpen, onClose } = useCreatePersonagemModal();
 
   const [form, setForm] = useState<Personagem>({
-    id: crypto.randomUUID(),             // Precisa criar ID vazio inicialmente
+    id: uuidv4(),             // Precisa criar ID vazio inicialmente
     tipo: "personagem", // Deve iniciar fixo como "personagem"
     nome: "",
     classe: "",
