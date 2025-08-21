@@ -141,7 +141,6 @@ export default function ModalCombatPersonagem() {
                 <Input
                   id="nivel"
                   name="nivel"
-                  type="number"
                   value={personagem.nivel}
                   onChange={handleChange}
                 />
@@ -152,7 +151,6 @@ export default function ModalCombatPersonagem() {
                 <Input
                   id="vida"
                   name="vida"
-                  type="number"
                   value={personagem.vida}
                   onChange={handleChange}
                 />
@@ -163,7 +161,6 @@ export default function ModalCombatPersonagem() {
                 <Input
                   id="armadura"
                   name="armadura"
-                  type="number"
                   value={personagem.armadura}
                   onChange={handleChange}
                 />
@@ -174,7 +171,6 @@ export default function ModalCombatPersonagem() {
                 <Input
                   id="pp"
                   name="pp"
-                  type="number"
                   value={personagem.pp}
                   onChange={handleChange}
                 />

@@ -113,7 +113,6 @@ export default function ModalCreatePersonagem() {
                 <Input
                   id="nivel"
                   type="text"
-                  inputMode="numeric"
                   value={form.nivel}
                   onChange={(e) => atualizar("nivel", e.target.value)}
                 />
@@ -124,7 +123,6 @@ export default function ModalCreatePersonagem() {
                 <Input
                   id="vida"
                   type="text"
-                  inputMode="numeric"
                   value={form.vida}
                   onChange={(e) => atualizar("vida", e.target.value)}
                 />
@@ -135,7 +133,6 @@ export default function ModalCreatePersonagem() {
                 <Input
                   id="armadura"
                   type="text"
-                  inputMode="numeric"
                   value={form.armadura}
                   onChange={(e) => atualizar("armadura", e.target.value)}
                 />

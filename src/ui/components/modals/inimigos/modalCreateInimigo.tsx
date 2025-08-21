@@ -87,7 +87,6 @@ export default function ModalCreateInimigo() {
                 <Input
                   id="vida"
                   type="text"
-                  inputMode="numeric"
                   value={form.vida}
                   onChange={(e) => atualizar("vida", e.target.value)}
                 />
@@ -98,7 +97,6 @@ export default function ModalCreateInimigo() {
                 <Input
                   id="armadura"
                   type="text"
-                  inputMode="numeric"
                   value={form.armadura}
                   onChange={(e) => atualizar("armadura", e.target.value)}
                 />
@@ -109,7 +107,6 @@ export default function ModalCreateInimigo() {
                 <Input
                   id="ataque"
                   type="text"
-                  inputMode="numeric"
                   value={form.ataque}
                   onChange={(e) => atualizar("ataque", e.target.value)}
                 />

@@ -156,7 +156,6 @@ export default function ModalEditPersonagem() {
                 <Input
                   id="iniciativa"
                   name="iniciativa"
-                  type="number"
                   value={form.iniciativa}
                   onChange={(e) => atualizar("iniciativa", Number(e.target.value))}
                 />
