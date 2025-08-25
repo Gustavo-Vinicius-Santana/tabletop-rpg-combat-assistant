@@ -167,7 +167,7 @@ export default function ModalCombatPersonagem() {
               </div>
 
               <div>
-                <Label htmlFor="pp">Pontos de Poder (PP)</Label>
+                <Label htmlFor="pp">Percepção passiva (PP)</Label>
                 <Input
                   id="pp"
                   name="pp"

@@ -141,7 +141,7 @@ export default function ModalEditPersonagemTabela() {
               </div>
 
               <div>
-                <Label htmlFor="pp">Pontos de Poder (PP)</Label>
+                <Label htmlFor="pp">Percepção Passiva (PP)</Label>
                 <Input
                   id="pp"
                   name="pp"
