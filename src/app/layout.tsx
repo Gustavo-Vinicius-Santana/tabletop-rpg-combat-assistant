@@ -46,31 +46,39 @@ export default function RootLayout({
       >
         <SidebarProvider>
           <div className="flex min-h-screen w-full">
-            {/* Sidebar fixa */}
-            <SideMenu />
+            {/* Sidebar */}
+            <aside className="hidden md:block">
+              <SideMenu />
+            </aside>
 
-            {/* Conteúdo principal da aplicação */}
+            {/* Conteúdo principal */}
             <main className="flex-1 flex flex-col">
-              <SidebarTrigger />
+              {/* Trigger visível em telas pequenas */}
+              <div className="md:hidden p-2">
+                <SidebarTrigger />
+              </div>
+
               {children}
+
+              {/* Modais */}
+              <div>
+                <ModalCreateInimigo />
+                <ModalListInimigo />
+                <ModalEditInimigo />
+                <ModalSelectInimigo />
+                <ModalCombatInimigos />
+
+                <ModalCreatePersonagem />
+                <ModalListPersonagem />
+                <ModalSelectPersonagem />
+                <ModalCombatPersonagem />
+                <ModalEditPersonagem />
+                <ModalEditPersonagemTabela />
+
+                <ModalEditCombat />
+              </div>
             </main>
           </div>
-
-          {/* Modais (já estão fora da main, o que é correto) */}
-          <ModalCreateInimigo />
-          <ModalListInimigo />
-          <ModalEditInimigo />
-          <ModalSelectInimigo />
-          <ModalCombatInimigos />
-
-          <ModalCreatePersonagem />
-          <ModalListPersonagem />
-          <ModalSelectPersonagem />
-          <ModalCombatPersonagem />
-          <ModalEditPersonagem />
-          <ModalEditPersonagemTabela />
-
-          <ModalEditCombat />
         </SidebarProvider>
       </body>
     </html>

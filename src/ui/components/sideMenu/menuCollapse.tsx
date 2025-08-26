@@ -35,7 +35,7 @@ export function MenuCollapse({
   title,
   icon: Icon,
   options,
-  defaultOpen = false,
+  defaultOpen = true,
 }: SidebarMenuSectionProps) {
   return (
     <SidebarMenu className="pt-3">
@@ -66,7 +66,7 @@ export function MenuCollapse({
                       className="flex items-center px-3 py-1 hover:bg-sessions rounded-md transition duration-300 ease-in-out text-sm md:text-base"
                     >
                       {OptionIcon && <OptionIcon className="text-xl" />}
-                      <span className="ml-2 hover:translate-x-1 transition duration-300 ease-in-out">
+                      <span className="ml-2 hover:translate-x-1 transition duration-300 ease-in-out" onClick={onClick}>
                         {label}
                       </span>
                     </Link>
