@@ -36,7 +36,7 @@ export default function ModalListInimigo() {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[80vh]">
+      <DialogContent className="max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>Lista de Inimigos</DialogTitle>
           <DialogDescription>

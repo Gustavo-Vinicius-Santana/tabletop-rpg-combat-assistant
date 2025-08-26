@@ -17,12 +17,13 @@ import { Textarea } from "@/ui/shadcn/components/textarea";
 import { Label } from "@/ui/shadcn/components/label";
 import { Button } from "@/ui/shadcn/components/button";
 import { Inimigo } from "@/lib/types/type";
+import { v4 as uuidv4 } from "uuid";
 
 export default function ModalCreateInimigo() {
   const { isOpen, onClose } = useCreateInimigoModal();
 
   const [form, setForm] = useState<Inimigo>({
-    id: crypto.randomUUID(),
+    id: uuidv4(),
     tipo: "inimigo",
     nome: "",
     vida: "",
@@ -86,7 +87,6 @@ export default function ModalCreateInimigo() {
                 <Input
                   id="vida"
                   type="text"
-                  inputMode="numeric"
                   value={form.vida}
                   onChange={(e) => atualizar("vida", e.target.value)}
                 />
@@ -97,7 +97,6 @@ export default function ModalCreateInimigo() {
                 <Input
                   id="armadura"
                   type="text"
-                  inputMode="numeric"
                   value={form.armadura}
                   onChange={(e) => atualizar("armadura", e.target.value)}
                 />
@@ -108,7 +107,6 @@ export default function ModalCreateInimigo() {
                 <Input
                   id="ataque"
                   type="text"
-                  inputMode="numeric"
                   value={form.ataque}
                   onChange={(e) => atualizar("ataque", e.target.value)}
                 />

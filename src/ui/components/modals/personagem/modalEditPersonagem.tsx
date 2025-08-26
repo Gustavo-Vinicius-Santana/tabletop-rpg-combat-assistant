@@ -141,7 +141,7 @@ export default function ModalEditPersonagem() {
               </div>
 
               <div>
-                <Label htmlFor="pp">Pontos de Poder (PP)</Label>
+                <Label htmlFor="pp">Percepção Passiva (PP)</Label>
                 <Input
                   id="pp"
                   name="pp"
@@ -156,7 +156,6 @@ export default function ModalEditPersonagem() {
                 <Input
                   id="iniciativa"
                   name="iniciativa"
-                  type="number"
                   value={form.iniciativa}
                   onChange={(e) => atualizar("iniciativa", Number(e.target.value))}
                 />
