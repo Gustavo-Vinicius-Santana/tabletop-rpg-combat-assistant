@@ -18,6 +18,8 @@ import {
   useListPersonagemModal,
 } from "@/lib/stores/useModal";
 
+import { useSidebar } from "@/ui/shadcn/components/sidebar";
+
 export default function SideMenu() {
   const { onOpen: openCreatePersonagem } = useCreatePersonagemModal();
   const { onOpen: openListPersonagem } = useListPersonagemModal();
@@ -25,9 +27,17 @@ export default function SideMenu() {
   const { onOpen: openCreateInimigo } = useCreateInimigoModal();
   const { onOpen: openListInimigo } = useListInimigoModal();
 
+    const { setOpenMobile } = useSidebar();
+
+  const closeMenu = () => {
+    if (window.innerWidth <= 764) {
+      setOpenMobile(false);
+    }
+  };
+
   const homeOptions = [
-    { label: "Tabela personagens", href: "/" },
-    { label: "Combate", href: "/combate" },
+    { label: "Tabela personagens", href: "/", onClick: closeMenu },
+    { label: "Combate", href: "/combate", onClick: closeMenu },
   ];
 
   const monstrosOptions = [
@@ -50,7 +60,7 @@ export default function SideMenu() {
           <SidebarGroupContent>
             <SidebarMenu>
               <MenuCollapse title="Home" options={homeOptions} />
-              <MenuCollapse title="Monstros" options={monstrosOptions} />
+              <MenuCollapse title="Inimigos" options={monstrosOptions} />
               <MenuCollapse title="Personagens" options={personagensOptions} />
             </SidebarMenu>
           </SidebarGroupContent>
